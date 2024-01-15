@@ -36,6 +36,7 @@ dependencies:
   cloud_firestore: ^4.7.0  
   syncfusion_flutter_calendar: ^24.1.45
   mailer: 6.0.1
+  shimmer: ^2.0.0
 
 
   # The following adds the Cupertino Icons font to your application.
