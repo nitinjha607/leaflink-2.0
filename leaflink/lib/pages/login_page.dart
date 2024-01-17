@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:leaflink/components/my_textfield.dart';
-import 'package:leaflink/components/my_button.dart';
-import 'package:leaflink/pages/forgotpass_page.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:leaflink/pages/home_page.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:leaflink/components/my_button.dart';
+import 'package:leaflink/components/my_textfield.dart';
+import 'package:leaflink/components/google_sign_in_button.dart'; // Add this import
+
+import 'package:leaflink/pages/forgotpass_page.dart';
+import 'package:leaflink/pages/home_page.dart';
 
 class LoginPage extends StatelessWidget {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -60,6 +63,47 @@ class LoginPage extends StatelessWidget {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(errorMessage),
+        ),
+      );
+    }
+  }
+
+  Future<void> signInWithGoogle(BuildContext context) async {
+    try {
+      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+      if (googleUser == null) {
+        // The user canceled the Google Sign-In process
+        return;
+      }
+
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
+      final AuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      // Sign in with Google credential
+      await FirebaseAuth.instance.signInWithCredential(credential);
+
+      // Display success message or navigate to the next screen
+      print('User signed in with Google successfully!');
+
+      // Navigate to the next screen or home screen
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => HomePage(),
+        ),
+      );
+    } catch (e) {
+      // Handle sign-in errors
+      print('Error during Google sign-in: $e');
+
+      // Display an error message to the user if needed
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error during Google sign-in. Please try again.'),
         ),
       );
     }
@@ -191,6 +235,11 @@ class LoginPage extends StatelessWidget {
                 ],
               ),
             ),
+            const SizedBox(height: 10),
+            GoogleSignInButton(
+              onPressed: () => signInWithGoogle(context),
+              text: 'Sign In with Google',
+            ),
             const Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -213,10 +262,11 @@ class LoginPage extends StatelessWidget {
                   child: Text(
                     'Register now',
                     style: TextStyle(
-                        color: const Color.fromRGBO(57, 80, 92, 1),
-                        fontSize: MediaQuery.of(context).size.height * 0.02,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: GoogleFonts.kohSantepheap().fontFamily),
+                      color: const Color.fromRGBO(57, 80, 92, 1),
+                      fontSize: MediaQuery.of(context).size.height * 0.02,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: GoogleFonts.kohSantepheap().fontFamily,
+                    ),
                   ),
                 ),
               ],
