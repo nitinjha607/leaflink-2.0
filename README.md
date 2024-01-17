@@ -17,12 +17,12 @@ Welcome to Leaflink, your go-to companion for making a positive impact on the en
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/your-username/Leaflink.git
+   git clone https://github.com/your-username/leaflink-2.0.git
    Install Dependencies:
 
 2. **Install dependecies**
    ```bash
-    cd Leaflink
+    cd leaflink-2.0
     flutter pub get
    
 3. **Run the app**
