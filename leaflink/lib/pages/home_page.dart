@@ -12,6 +12,8 @@ import 'package:leaflink/pages/settingpages/help_page.dart';
 import 'package:leaflink/pages/settingpages/privacy_page.dart';
 import 'package:leaflink/pages/settingpages/language_page.dart';
 import 'package:leaflink/pages/settingpages/notification_page.dart';
+import 'package:leaflink/pages/graphicaldata/chart_container.dart';
+import 'package:leaflink/pages/graphicaldata/bar_chart.dart';
 
 class HomePage extends StatefulWidget {
   static const String routeName = 'home_page';
@@ -503,25 +505,22 @@ class _HomePageState extends State<HomePage> {
               ),
               Positioned(
                 top: MediaQuery.of(context).size.height * 0.4,
-                right: MediaQuery.of(context).size.width * -0.01,
+                right: MediaQuery.of(context).size.width * -0.02,
                 child: Container(
-                    padding: EdgeInsets.all(
-                      MediaQuery.of(context).size.height * 0.02,
-                    ),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: MediaQuery.of(context).size.width * 0.85,
-                          height: MediaQuery.of(context).size.height * 0.35,
-                          decoration: const BoxDecoration(
-                            borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(5),
-                                bottomLeft: Radius.circular(5)),
-                            color: Color.fromRGBO(246, 245, 235, 1),
-                          ),
-                        ),
-                      ],
-                    )),
+                  decoration: const BoxDecoration(
+                    borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(5),
+                        bottomLeft: Radius.circular(5)),
+                    color: Color.fromRGBO(246, 245, 235, 1),
+                  ),
+                  width: MediaQuery.of(context).size.width * 0.9,
+                  height: MediaQuery.of(context).size.height * 0.35,
+                  child: ChartContainer(
+                    title: '',
+                    color: const Color.fromRGBO(246, 245, 235, 1),
+                    chart: BarChartContent(),
+                  ),
+                ),
               ),
 
               //graphical data
@@ -601,7 +600,7 @@ class _HomePageState extends State<HomePage> {
                                   )),
                             )),
                         Container(
-                          margin: EdgeInsets.all(15),
+                          margin: const EdgeInsets.all(15),
                           width: MediaQuery.of(context).size.height * 0.07,
                           height: MediaQuery.of(context).size.height * 0.07,
                           decoration: const BoxDecoration(
