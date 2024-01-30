@@ -12,6 +12,8 @@ import 'package:leaflink/pages/settingpages/privacy_page.dart';
 import 'package:leaflink/pages/settingpages/language_page.dart';
 import 'package:leaflink/pages/settingpages/notification_page.dart';
 import 'package:leaflink/pages/leaderboard_page.dart';
+import 'package:leaflink/pages/Create_Post_Page.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -49,6 +51,7 @@ class MyApp extends StatelessWidget {
             const NotificationPage(),
         PrivacyPage.routeName: (BuildContext context) => const PrivacyPage(),
         LanguagePage.routeName: (BuildContext context) => const LanguagePage(),
+        CreatePostPage.routeName: (BuildContext context) => const CreatePostPage(),
       },
     );
   }
