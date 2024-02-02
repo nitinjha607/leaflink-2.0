@@ -1,6 +1,8 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class CreatePostPage extends StatefulWidget {
   static const String routeName = 'create_post_page';
@@ -14,84 +16,154 @@ class CreatePostPage extends StatefulWidget {
 class _CreatePostPageState extends State<CreatePostPage> {
   TextEditingController _captionController = TextEditingController();
   final _imagePicker = ImagePicker();
-  late File _image = File(''); // Initialize with a default value
+  File? _image;
+  bool isLoading = false;
 
+  Future<void> _selectImage() async {
+    final pickedFile = await _imagePicker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      setState(() {
+        _image = File(pickedFile.path);
+      });
+    }
+  }
+  Future<void> postImage() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    try {
+      // Upload to Firebase Storage
+      firebase_storage.Reference ref = firebase_storage.FirebaseStorage.instance
+          .ref()
+          .child('posts/${DateTime.now().toString()}');
+
+      await ref.putFile(_image!);
+
+      // Get download URL
+      final String downloadURL = await ref.getDownloadURL();
+
+      // Save post to Firestore
+      await FirebaseFirestore.instance.collection('posts').add({
+        'imageUrl': downloadURL,
+        'caption': _captionController.text,
+        'timestamp': Timestamp.now(),
+      });
+
+      // Hide loading indicator
+      setState(() {
+        isLoading = false;
+      });
+
+      // Show success message
+      showSnackBar('Posted successfully!');
+
+      // Navigate back
+      Navigator.pop(context);
+    } catch (e) {
+      // Hide loading indicator
+      setState(() {
+        isLoading = false;
+      });
+
+      print('Error creating post: $e');
+      showSnackBar('Error creating post. Please try again.');
+    }
+  }
+  void showSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        duration: Duration(seconds: 2),
+      ),
+    );
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Create Post'),
+        title: Text(
+          'Create Post',
+          style: TextStyle(
+            color: Colors.white,
+          ),
+        ),
+        centerTitle: true,
+        backgroundColor: Color.fromRGBO(97, 166, 171, 1),
       ),
-      backgroundColor: Colors.black,
-      body: Center(
+      backgroundColor: Colors.green[50],
+      body: isLoading
+          ? Center(child: CircularProgressIndicator())
+          : SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Image Picker
-              InkWell(
-                onTap: () async {
-                  final pickedFile = await _imagePicker.pickImage(source: ImageSource.gallery);
-                  if (pickedFile != null) {
-                    setState(() {
-                      _image = File(pickedFile.path);
-                    });
-                  }
-                },
-                child: Container(
-                  width: 200,
-                  height: 200,
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.white),
-                    shape: BoxShape.circle,
-                  ),
+              SizedBox(height: 16),
+              Container(
+                height: 200,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  color:Color.fromRGBO(97, 166, 171, 1),
+                ),
+                child: InkWell(
+                  onTap: _selectImage,
                   child: _image != null
-                      ? Image.file(_image, fit: BoxFit.cover)
-                      : Icon(
-                          Icons.add_a_photo,
-                          color: Colors.white,
-                          size: 50,
-                        ),
+                      ? ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: Image.file(
+                      _image!,
+                      width: double.infinity,
+                      height: double.infinity,
+                      fit: BoxFit.cover,
+                    ),
+                  )
+                      : Center(
+                    child: Icon(
+                      Icons.camera_alt,
+                      color: Colors.black,
+                      size: 50,
+                    ),
+                  ),
                 ),
               ),
               SizedBox(height: 16),
-
-              // Caption Input
               TextField(
                 controller: _captionController,
                 decoration: InputDecoration(
-                  labelText: 'Caption',
+                  labelText: 'Write a caption...',
                   border: OutlineInputBorder(),
                   filled: true,
-                  fillColor: Colors.white,
+                  fillColor: Colors.grey[200],
                 ),
                 maxLines: 4,
               ),
               SizedBox(height: 16),
-
-              // Create Post Button
               ElevatedButton(
-                onPressed: () {
-                  // Handle the logic for creating the post with the caption and image
-                  String caption = _captionController.text;
-                  // Add your logic to save the post with the caption and image
-                  // For simplicity, just print the caption and image path for now
-                  print('Post Created with Caption: $caption and Image Path: ${_image.path}');
-                  // You may want to navigate back or perform other actions after post creation
-                },
-                child: Text('Create Post'),
+                onPressed: postImage,
+                style: ElevatedButton.styleFrom(
+                  primary:Color.fromRGBO(97, 166, 171, 1),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  child: Text(
+                    'Share',
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
               ),
             ],
           ),
         ),
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    _captionController.dispose();
-    super.dispose();
   }
 }

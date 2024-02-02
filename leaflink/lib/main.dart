@@ -24,6 +24,7 @@ void main() async {
       projectId: 'leaf-link-1e912',
       appId: '821697692793:android:195ad8509aa13d7ac400a8',
       messagingSenderId: '821697692793',
+        storageBucket: 'gs://leaf-link-1e912.appspot.com'
     ),
   );
   runApp(MyApp());
