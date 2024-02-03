@@ -6,54 +6,80 @@ class ChartContainer extends StatelessWidget {
   final Color color;
   final String title;
   final Widget chart;
+  final String currentMonthValue;
 
   const ChartContainer({
-    Key? key,
+    super.key,
     required this.title,
     required this.color,
     required this.chart,
-  }) : super(key: key);
+    required this.currentMonthValue,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Container(
-        width: MediaQuery.of(context).size.width * 0.95,
-        height: MediaQuery.of(context).size.width * 0.95 * 0.65,
-        padding: EdgeInsets.fromLTRB(0, 10, 20, 10),
-        decoration: BoxDecoration(
-          color: color,
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: <Widget>[
-            Row(
-              children: <Widget>[
-                Expanded(
-                  child: SizedBox(
-                    width: MediaQuery.of(context).size.width * 0.65,
-                    height: MediaQuery.of(context).size.height * 0.15,
-                    child: chart,
-                  ),
+    return Container(
+      width: MediaQuery.of(context).size.width * 0.95,
+      height: MediaQuery.of(context).size.width * 0.95 * 0.65,
+      padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding:
+                const EdgeInsets.only(bottom: 40), // Adjust the value as needed
+            child: Text(
+              currentMonthValue,
+              style: TextStyle(
+                fontSize: MediaQuery.of(context).size.height * 0.028,
+                color: const Color.fromRGBO(16, 25, 22, 1),
+                fontFamily: GoogleFonts.comfortaa().fontFamily,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          Row(
+            children: <Widget>[
+              Expanded(
+                child: SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.65,
+                  height: MediaQuery.of(context).size.height * 0.15,
+                  child: chart,
                 ),
-                RotatedBox(
+              ),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  RotatedBox(
                     quarterTurns: -1,
                     child: Expanded(
-                      child: Text(
-                        '      TREES SAVED',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: MediaQuery.of(context).size.height * 0.022,
-                          color: const Color.fromRGBO(16, 25, 22, 1),
-                          fontFamily: GoogleFonts.comfortaa().fontFamily,
-                        ),
+                      child: Column(
+                        children: [
+                          Text(
+                            'CONTRIBUTIONS',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize:
+                                  MediaQuery.of(context).size.height * 0.022,
+                              color: const Color.fromRGBO(16, 25, 22, 1),
+                              fontFamily: GoogleFonts.comfortaa().fontFamily,
+                            ),
+                          ),
+                        ],
                       ),
-                    )),
-              ],
-            )
-          ],
-        ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }

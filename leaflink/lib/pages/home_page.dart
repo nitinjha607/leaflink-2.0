@@ -1,4 +1,4 @@
-// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: library_private_types_in_public_api, avoid_print, use_build_context_synchronously
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -18,7 +18,7 @@ import 'package:leaflink/pages/graphicaldata/bar_chart.dart';
 class HomePage extends StatefulWidget {
   static const String routeName = 'home_page';
 
-  const HomePage({Key? key}) : super(key: key);
+  const HomePage({super.key});
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -28,7 +28,42 @@ class _HomePageState extends State<HomePage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   int _selectedIndex = 0;
   final searchController = TextEditingController();
+  DateTime now = DateTime.now();
+  final int currentMonth = DateTime.now().month;
 
+  String monthName(int monthNumber) {
+    switch (monthNumber) {
+      case 1:
+        return 'January';
+      case 2:
+        return 'February';
+      case 3:
+        return 'March';
+      case 4:
+        return 'April';
+      case 5:
+        return 'May';
+      case 6:
+        return 'June';
+      case 7:
+        return 'July';
+      case 8:
+        return 'August';
+      case 9:
+        return 'September';
+      case 10:
+        return 'October';
+      case 11:
+        return 'November';
+      case 12:
+        return 'December';
+      default:
+        return '';
+    }
+  }
+
+//camerafunction
+  void camerafunction() {}
   // Function to handle user logout
   Future<void> logoutUser(BuildContext context) async {
     try {
@@ -39,7 +74,8 @@ class _HomePageState extends State<HomePage> {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => LogInOrRegister(), // Your login page widget
+          builder: (context) =>
+              const LogInOrRegister(), // Your login page widget
         ),
       );
     } catch (e) {
@@ -58,19 +94,20 @@ class _HomePageState extends State<HomePage> {
         print('User account deleted successfully');
 
         ScaffoldMessenger.of(_scaffoldKey.currentContext!).showSnackBar(
-          SnackBar(
+          const SnackBar(
             content: Text('Your account has been deleted. Please logout.'),
           ),
         );
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => LogInOrRegister(), // Your login page widget
+            builder: (context) =>
+                const LogInOrRegister(), // Your login page widget
           ),
         );
       } else {
         ScaffoldMessenger.of(_scaffoldKey.currentContext!).showSnackBar(
-          SnackBar(
+          const SnackBar(
             content: Text('Your account has been deleted. Please logout.'),
           ),
         );
@@ -518,7 +555,8 @@ class _HomePageState extends State<HomePage> {
                   child: ChartContainer(
                     title: '',
                     color: const Color.fromRGBO(246, 245, 235, 1),
-                    chart: BarChartContent(),
+                    chart: const BarChartContent(),
+                    currentMonthValue: monthName(currentMonth),
                   ),
                 ),
               ),
@@ -600,19 +638,26 @@ class _HomePageState extends State<HomePage> {
                                   )),
                             )),
                         Container(
-                          margin: const EdgeInsets.all(15),
-                          width: MediaQuery.of(context).size.height * 0.07,
-                          height: MediaQuery.of(context).size.height * 0.07,
-                          decoration: const BoxDecoration(
-                            color: Color.fromRGBO(246, 245, 235, 1),
-                            borderRadius: BorderRadius.all(Radius.circular(3)),
-                          ),
-                          child: Icon(
-                            Icons.camera_alt,
-                            color: const Color.fromRGBO(57, 80, 92, 1),
-                            size: MediaQuery.sizeOf(context).height * 0.035,
-                          ),
-                        )
+                            margin: const EdgeInsets.all(15),
+                            width: MediaQuery.of(context).size.height * 0.07,
+                            height: MediaQuery.of(context).size.height * 0.07,
+                            decoration: const BoxDecoration(
+                              color: Color.fromRGBO(246, 245, 235, 1),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(3)),
+                            ),
+                            child: InkWell(
+                              onTap: camerafunction,
+                              child: Container(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Icon(
+                                  Icons.camera_alt,
+                                  color: const Color.fromRGBO(57, 80, 92, 1),
+                                  size: MediaQuery.of(context).size.height *
+                                      0.035,
+                                ),
+                              ),
+                            ))
                       ],
                     )),
               )
