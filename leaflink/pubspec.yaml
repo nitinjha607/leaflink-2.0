@@ -37,6 +37,7 @@ dependencies:
   firebase_storage: ^11.6.1
   syncfusion_flutter_calendar: ^24.1.45
   image_picker: ^1.0.7
+  table_calendar: ^3.0.9
 
 
   # The following adds the Cupertino Icons font to your application.
