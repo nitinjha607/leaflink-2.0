@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:leaflink/pages/connect_page.dart';
+import 'package:leaflink/pages/eventmanagement_page.dart';
 import 'package:leaflink/pages/home_page.dart';
 import 'package:leaflink/pages/leaderboard_page.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart'; // Import the necessary package
@@ -16,7 +17,6 @@ class CalendarPage extends StatefulWidget {
 
 class _CalendarPageState extends State<CalendarPage> {
   int _selectedIndex = 2; // Set the initial index to 2 for the Calendar page
-  double calendarHeight = 0.8; // Initial calendar height, 80% of the screen
 
   @override
   Widget build(BuildContext context) {
@@ -34,47 +34,30 @@ class _CalendarPageState extends State<CalendarPage> {
         ),
         backgroundColor: const Color.fromRGBO(97, 166, 171, 1),
       ),
-      body: Column(
-        children: [
-          Container(
-            height: MediaQuery.of(context).size.height * 0.61,
-            decoration: const BoxDecoration(
-              color: Color.fromRGBO(246, 245, 235, 1),
-            ),
-            child: SfCalendar(
-              view: CalendarView.month,
-              // Add any additional properties or controllers as needed
-            ),
+      body: SafeArea(
+          child: Stack(children: [
+        Container(
+          alignment: Alignment.center,
+          height: MediaQuery.of(context).size.height,
+          width: MediaQuery.of(context).size.width,
+          decoration: const BoxDecoration(
+            color: Color.fromRGBO(246, 245, 235, 1),
           ),
-          Container(
-            height: MediaQuery.of(context).size.height * (1 - calendarHeight),
-            padding: const EdgeInsets.all(14.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                ElevatedButton(
-                  onPressed: () {
-                    // Handle the "Add Event" button press
-                    // You can add logic to show a dialog or navigate to another screen
-                    // for adding events.
-                    print('Add Event button pressed');
-                  },
-                  child: Text('Add Event'),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    // Handle the "Show Events" button press
-                    // You can add logic to show a dialog or navigate to another screen
-                    // for displaying events.
-                    print('Show Events button pressed');
-                  },
-                  child: Text('Show Events'),
-                ),
-              ],
-            ),
+        ),
+        Container(
+          height: MediaQuery.of(context).size.height,
+          margin: const EdgeInsets.all(15),
+          width: MediaQuery.of(context).size.width,
+          decoration: const BoxDecoration(
+            borderRadius: BorderRadius.all(Radius.circular(10)),
+            color: Color.fromRGBO(204, 221, 221, 1),
           ),
-        ],
-      ),
+          child: SfCalendar(
+            view: CalendarView.month,
+            // Add any additional properties or controllers as needed
+          ),
+        ),
+      ])),
 
       //navbar
       bottomNavigationBar: BottomNavigationBar(
@@ -121,6 +104,14 @@ class _CalendarPageState extends State<CalendarPage> {
               break;
           }
         },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // Navigate to the page where events can be managed
+          Navigator.pushNamed(context, EventManagementPage.routeName);
+        },
+        child: Icon(Icons.event),
+        backgroundColor: const Color.fromRGBO(97, 166, 171, 1),
       ),
     );
   }
