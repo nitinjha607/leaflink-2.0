@@ -8,16 +8,15 @@ import 'package:leaflink/pages/Create_Post_Page.dart';
 
 class Post {
   final String id;
-  final String caption;
-  int likes;
+  final String imageUrl;
 
-  Post({required this.id, required this.caption, required this.likes});
+  Post({required this.id, required this.imageUrl});
 
   factory Post.fromDocument(DocumentSnapshot doc) {
+    final data = doc.data() as Map<String, dynamic>; // Cast to the correct type
     return Post(
       id: doc.id,
-      caption: doc['caption'],
-      likes: doc['likes'],
+      imageUrl: data['imageUrl'] ?? '', // Replace with your field name
     );
   }
 }
@@ -42,20 +41,12 @@ class _ConnectPageState extends State<ConnectPage> {
   }
 
   Future<void> _fetchPosts() async {
-    QuerySnapshot snapshot = await FirebaseFirestore.instance.collection('posts').get();
-    List<Post> posts = snapshot.docs.map((doc) => Post.fromDocument(doc)).toList();
+    QuerySnapshot snapshot =
+        await FirebaseFirestore.instance.collection('posts').get();
+    List<Post> posts =
+        snapshot.docs.map((doc) => Post.fromDocument(doc)).toList();
     setState(() {
       _posts = posts;
-    });
-  }
-
-  Future<void> _likePost(Post post) async {
-    FirebaseFirestore.instance.collection('posts').doc(post.id).update({
-      'likes': post.likes + 1,
-    });
-
-    setState(() {
-      post.likes += 1;
     });
   }
 
@@ -83,7 +74,6 @@ class _ConnectPageState extends State<ConnectPage> {
           ),
         ],
       ),
-
       body: SafeArea(
         child: Stack(
           children: [
@@ -105,12 +95,46 @@ class _ConnectPageState extends State<ConnectPage> {
                   borderRadius: BorderRadius.all(Radius.circular(10)),
                   color: Color.fromRGBO(204, 221, 221, 1),
                 ),
+                child: ListView.builder(
+                  itemCount: _posts.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return Column(
+                      children: [
+                        SizedBox(height: 10),
+                        GestureDetector(
+                          onTap: () {
+                            // Add onTap functionality
+                          },
+                          child: Stack(
+                            alignment: Alignment.bottomRight,
+                            children: [
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(16),
+                                child: Image.network(_posts[index].imageUrl,
+                                    fit: BoxFit.cover,
+                                    width: MediaQuery.of(context).size.width,
+                                    height: MediaQuery.of(context).size.height),
+                              ),
+                              IconButton(
+                                onPressed: () {
+                                  // Add like functionality
+                                },
+                                icon: Icon(Icons.favorite),
+                                color: Colors.red,
+                                iconSize: 30,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                ),
               ),
             ),
           ],
         ),
       ),
-
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: const Color.fromRGBO(97, 166, 171, 1),
         type: BottomNavigationBarType.fixed,
