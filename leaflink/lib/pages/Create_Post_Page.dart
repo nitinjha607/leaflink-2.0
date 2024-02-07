@@ -46,14 +46,16 @@ class _CreatePostPageState extends State<CreatePostPage> {
 
       // Get download URL
       final String downloadURL = await ref.getDownloadURL();
+      final String userEmail = FirebaseAuth.instance.currentUser!.email!;
 
       // Save post to Firestore
       await FirebaseFirestore.instance.collection('posts').add({
         'imageUrl': downloadURL,
         'caption': _captionController.text,
         'timestamp': Timestamp.now(),
+        'email': userEmail,
         'likes': 0,
-        'email': FirebaseAuth.instance.currentUser!.email,
+        'likedBy': [],
       });
 
       // Hide loading indicator

@@ -5,6 +5,7 @@ import 'package:leaflink/pages/home_page.dart';
 import 'package:leaflink/pages/leaderboard_page.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart'; // Import the necessary package
 import 'package:google_fonts/google_fonts.dart';
+import 'package:leaflink/pages/added_events.dart'; // Import the AddedEventsPage
 
 class CalendarPage extends StatefulWidget {
   static const String routeName = 'calendar_page';
@@ -63,7 +64,7 @@ class _CalendarPageState extends State<CalendarPage> {
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: const Color.fromRGBO(97, 166, 171, 1),
         type: BottomNavigationBarType.fixed,
-        items: const <BottomNavigationBarItem>[
+        items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.home_filled),
             label: 'Home',
@@ -105,13 +106,27 @@ class _CalendarPageState extends State<CalendarPage> {
           }
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // Navigate to the page where events can be managed
-          Navigator.pushNamed(context, EventManagementPage.routeName);
-        },
-        child: Icon(Icons.event),
-        backgroundColor: const Color.fromRGBO(97, 166, 171, 1),
+      floatingActionButton: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          FloatingActionButton(
+            onPressed: () {
+              // Navigate to the page where events can be managed
+              Navigator.pushNamed(context, EventManagementPage.routeName);
+            },
+            child: Icon(Icons.event),
+            backgroundColor: const Color.fromRGBO(97, 166, 171, 1),
+          ),
+          SizedBox(width: 16), // Add spacing between the FABs
+          FloatingActionButton(
+            onPressed: () {
+              // Navigate to the AddedEventsPage
+              Navigator.pushNamed(context, AddedEventsPage.routeName);
+            },
+            child: Icon(Icons.add),
+            backgroundColor: const Color.fromRGBO(97, 166, 171, 1),
+          ),
+        ],
       ),
     );
   }

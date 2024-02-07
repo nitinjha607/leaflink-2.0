@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 
@@ -18,6 +19,36 @@ class _EventManagementPageState extends State<EventManagementPage> {
     super.initState();
     _selectedDate = DateTime.now();
     _selectedTime = TimeOfDay.now();
+  }
+
+  Future<void> _addEventToFirestore(
+      String title, String venue, DateTime date, TimeOfDay time) async {
+    try {
+      // Combine date and time into a single DateTime object
+      final DateTime combinedDateTime = DateTime(
+        date.year,
+        date.month,
+        date.day,
+        time.hour,
+        time.minute,
+      );
+
+      // Convert DateTime to Timestamp
+      final Timestamp timestamp = Timestamp.fromDate(combinedDateTime);
+
+      await FirebaseFirestore.instance.collection('events').add({
+        'title': title,
+        'venue': venue,
+        'datetime': timestamp, // Store combined date and time as Timestamp
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Event added successfully')),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error adding event: $e')),
+      );
+    }
   }
 
   @override
@@ -97,10 +128,28 @@ class _EventManagementPageState extends State<EventManagementPage> {
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
                       // Process form data
-                      // For example, save to database
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Event added successfully')),
-                      );
+                      final title = ''; // Get title from form field
+                      final venue = ''; // Get venue from form field
+
+                      // Parse date string into DateTime object
+                      final List<String> dateParts =
+                          _selectedDate.toString().split('/');
+                      final int year = int.parse(dateParts[2]);
+                      final int month = int.parse(dateParts[0]);
+                      final int day = int.parse(dateParts[1]);
+                      final DateTime selectedDateTime =
+                          DateTime(year, month, day);
+
+                      // Parse time string into TimeOfDay object
+                      final List<String> timeParts =
+                          _selectedTime.toString().split(':');
+                      final int hour = int.parse(timeParts[0]);
+                      final int minute = int.parse(timeParts[1].split(' ')[0]);
+                      final TimeOfDay selectedTimeOfDay =
+                          TimeOfDay(hour: hour, minute: minute);
+
+                      _addEventToFirestore(
+                          title, venue, selectedDateTime, selectedTimeOfDay);
                     }
                   },
                   child: Text(

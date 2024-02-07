@@ -1,26 +1,139 @@
 import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_share/flutter_share.dart';
+import 'package:leaflink/pages/Create_Post_Page.dart';
 import 'package:leaflink/pages/eventscalendar_page.dart';
 import 'package:leaflink/pages/home_page.dart';
 import 'package:leaflink/pages/leaderboard_page.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:leaflink/pages/Create_Post_Page.dart';
-import 'package:flutter_share/flutter_share.dart';
+import 'package:firebase_auth/firebase_auth.dart' as FirebaseAuth;
 
 class Post {
   final String id;
   final String imageUrl;
   final String caption;
+  final String username;
+  int likes;
+  List<String> likedBy;
 
-  Post({required this.id, required this.imageUrl, required this.caption});
+  Post({
+    required this.id,
+    required this.imageUrl,
+    required this.caption,
+    required this.username,
+    required this.likes,
+    required this.likedBy,
+  });
 
   factory Post.fromDocument(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
+    final email = (data['email'] ?? '') as String;
+    final username = email.substring(0, min(7, email.length));
     return Post(
       id: doc.id,
       imageUrl: data['imageUrl'] ?? '',
       caption: data['caption'] ?? '',
+      username: username,
+      likes: data['likes'] ?? 0,
+      likedBy: data['likedby'] ?? [],
+    );
+  }
+}
+
+class PostCard extends StatefulWidget {
+  final Post post;
+  final Function(Post) onLike;
+
+  const PostCard({required this.post, required this.onLike, Key? key})
+      : super(key: key);
+
+  @override
+  _PostCardState createState() => _PostCardState();
+}
+
+class _PostCardState extends State<PostCard> {
+  bool _isLiked = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Check if the post is liked by the current user
+    _isLiked = widget.post.likedBy
+        .contains(FirebaseAuth.FirebaseAuth.instance.currentUser!.email);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          widget.onLike(widget.post);
+          _isLiked = !_isLiked; // Toggle the liked status
+        });
+      },
+      child: Card(
+        margin: EdgeInsets.symmetric(horizontal: 8),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                '${widget.post.username}: ${widget.post.caption}',
+                style: TextStyle(
+                  color: const Color.fromARGB(255, 26, 25, 25),
+                  fontSize: 16,
+                ),
+              ),
+            ),
+            InkWell(
+              onTap: () {
+                print(widget.post.imageUrl);
+              },
+              child: Image.network(
+                widget.post.imageUrl,
+                fit: BoxFit.cover,
+              ),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                IconButton(
+                  onPressed: () {
+                    setState(() {
+                      widget.onLike(widget.post);
+                      _isLiked = !_isLiked; // Toggle the liked status
+                    });
+                  },
+                  icon: Icon(Icons.favorite),
+                  color: _isLiked ? Colors.red : Colors.grey,
+                  iconSize: 30,
+                ),
+                Text(
+                  '${widget.post.likes} Likes',
+                  style: TextStyle(fontSize: 16),
+                ),
+                IconButton(
+                  onPressed: () {
+                    _sharePost(widget.post.caption, widget.post.imageUrl);
+                  },
+                  icon: Icon(Icons.share),
+                  color: Colors.blue,
+                  iconSize: 30,
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _sharePost(String caption, String imageUrl) async {
+    await FlutterShare.share(
+      title: 'Check out this post',
+      text: '$caption\n$imageUrl',
     );
   }
 }
@@ -40,21 +153,6 @@ class _ConnectPageState extends State<ConnectPage> {
   bool _loading = false;
   bool _error = false;
 
-  static final Random _random = Random();
-
-  final List<String> _usernames = [
-    'JohnDoe',
-    'JaneDoe',
-    'Alice',
-    'Bob',
-    'Charlie',
-    // Add more usernames as needed
-  ];
-
-  String _generateRandomUsername() {
-    return _usernames[_random.nextInt(_usernames.length)];
-  }
-
   @override
   void initState() {
     super.initState();
@@ -68,12 +166,20 @@ class _ConnectPageState extends State<ConnectPage> {
     try {
       QuerySnapshot snapshot =
           await FirebaseFirestore.instance.collection('posts').get();
-      List<Post> posts =
-          snapshot.docs.map((doc) => Post.fromDocument(doc)).toList();
-      setState(() {
-        _posts = posts;
-        _error = false;
-      });
+      if (snapshot.docs.isNotEmpty) {
+        List<Post> posts = snapshot.docs
+            .map((doc) => Post.fromDocument(doc))
+            .where((post) => post != null) // Filter out null posts
+            .toList();
+        setState(() {
+          _posts = posts;
+          _error = false;
+        });
+      } else {
+        setState(() {
+          _error = true;
+        });
+      }
     } catch (e) {
       print('Error fetching posts: $e');
       setState(() {
@@ -86,11 +192,30 @@ class _ConnectPageState extends State<ConnectPage> {
     }
   }
 
-  void _sharePost(String caption, String imageUrl) async {
-    await FlutterShare.share(
-      title: 'Check out this post',
-      text: '$caption\n$imageUrl',
-    );
+  void _handleLike(Post post) {
+    setState(() {
+      // Check if the current user has already liked the post
+      bool alreadyLiked = post.likedBy
+          .contains(FirebaseAuth.FirebaseAuth.instance.currentUser!.email);
+
+      // If the user already liked the post, remove the like
+      if (alreadyLiked) {
+        post.likes--;
+        post.likedBy
+            .remove(FirebaseAuth.FirebaseAuth.instance.currentUser!.email!);
+      } else {
+        // If the user hasn't liked the post, add the like
+        post.likes++;
+        post.likedBy
+            .add(FirebaseAuth.FirebaseAuth.instance.currentUser!.email!);
+      }
+    });
+
+    // Update likes count and likedBy list in Firestore
+    FirebaseFirestore.instance.collection('posts').doc(post.id).update({
+      'likes': post.likes,
+      'likedBy': post.likedBy,
+    });
   }
 
   @override
@@ -130,72 +255,17 @@ class _ConnectPageState extends State<ConnectPage> {
                       ),
                     ),
                   )
-                : ListView.builder(
-                    itemCount: _posts.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      return Column(
-                        children: [
-                          SizedBox(height: 10),
-                          GestureDetector(
-                            onTap: () {
-                              // Add onTap functionality
-                            },
-                            child: Card(
-                              margin: EdgeInsets.symmetric(horizontal: 8),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Text(
-                                      '${_generateRandomUsername()}: ${_posts[index].caption}', // Display random username
-                                      style: TextStyle(
-                                        color: const Color.fromARGB(
-                                            255, 26, 25, 25),
-                                        fontSize: 16,
-                                      ),
-                                    ),
-                                  ),
-                                  InkWell(
-                                    onTap: () {
-                                      print(_posts[index].imageUrl);
-                                      // Add onTap functionality
-                                    },
-                                    child: Image.network(
-                                      _posts[index].imageUrl,
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ),
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      IconButton(
-                                        onPressed: () {
-                                          // Add like functionality
-                                        },
-                                        icon: Icon(Icons.favorite),
-                                        color: Colors.red,
-                                        iconSize: 30,
-                                      ),
-                                      IconButton(
-                                        onPressed: () {
-                                          _sharePost(_posts[index].caption,
-                                              _posts[index].imageUrl);
-                                        },
-                                        icon: Icon(Icons.share),
-                                        color: Colors.blue,
-                                        iconSize: 30,
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      );
-                    },
+                : RefreshIndicator(
+                    onRefresh: _fetchPosts,
+                    child: ListView.builder(
+                      itemCount: _posts.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        return PostCard(
+                          post: _posts[index],
+                          onLike: _handleLike,
+                        );
+                      },
+                    ),
                   ),
       ),
       bottomNavigationBar: BottomNavigationBar(

@@ -14,6 +14,7 @@ import 'package:leaflink/pages/settingpages/notification_page.dart';
 import 'package:leaflink/pages/leaderboard_page.dart';
 import 'package:leaflink/pages/eventmanagement_page.dart';
 import 'package:leaflink/pages/Create_Post_Page.dart';
+import 'package:leaflink/pages/added_events.dart'; // Import the AddedEventsPage
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -56,6 +57,7 @@ class MyApp extends StatelessWidget {
             EventManagementPage(),
         CreatePostPage.routeName: (BuildContext context) =>
             const CreatePostPage(),
+        AddedEventsPage.routeName: (BuildContext context) => AddedEventsPage(),
       },
     );
   }
