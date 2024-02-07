@@ -12,7 +12,7 @@ import 'package:leaflink/pages/settingpages/privacy_page.dart';
 import 'package:leaflink/pages/settingpages/language_page.dart';
 import 'package:leaflink/pages/settingpages/notification_page.dart';
 import 'package:leaflink/pages/leaderboard_page.dart';
-//import 'package:leaflink/pages/eventmanagement_page.dart';
+import 'package:leaflink/pages/eventmanagement_page.dart';
 import 'package:leaflink/pages/Create_Post_Page.dart';
 
 void main() async {
@@ -24,6 +24,7 @@ void main() async {
       projectId: 'leaf-link-1e912',
       appId: '821697692793:android:195ad8509aa13d7ac400a8',
       messagingSenderId: '821697692793',
+      storageBucket: 'leaf-link-1e912.appspot.com',
     ),
   );
   runApp(MyApp());
@@ -51,8 +52,8 @@ class MyApp extends StatelessWidget {
             const NotificationPage(),
         PrivacyPage.routeName: (BuildContext context) => const PrivacyPage(),
         LanguagePage.routeName: (BuildContext context) => const LanguagePage(),
-        //EventManagementPage.routeName: (BuildContext context) =>
-        //EventManagementPage()
+        EventManagementPage.routeName: (BuildContext context) =>
+            EventManagementPage(),
         CreatePostPage.routeName: (BuildContext context) =>
             const CreatePostPage(),
       },

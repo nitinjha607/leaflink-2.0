@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class CreatePostPage extends StatefulWidget {
   static const String routeName = 'create_post_page';
@@ -51,6 +52,8 @@ class _CreatePostPageState extends State<CreatePostPage> {
         'imageUrl': downloadURL,
         'caption': _captionController.text,
         'timestamp': Timestamp.now(),
+        'likes': 0,
+        'email': FirebaseAuth.instance.currentUser!.email,
       });
 
       // Hide loading indicator

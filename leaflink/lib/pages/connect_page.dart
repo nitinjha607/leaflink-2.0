@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:leaflink/pages/eventscalendar_page.dart';
@@ -5,18 +6,21 @@ import 'package:leaflink/pages/home_page.dart';
 import 'package:leaflink/pages/leaderboard_page.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:leaflink/pages/Create_Post_Page.dart';
+import 'package:flutter_share/flutter_share.dart';
 
 class Post {
   final String id;
   final String imageUrl;
+  final String caption;
 
-  Post({required this.id, required this.imageUrl});
+  Post({required this.id, required this.imageUrl, required this.caption});
 
   factory Post.fromDocument(DocumentSnapshot doc) {
-    final data = doc.data() as Map<String, dynamic>; // Cast to the correct type
+    final data = doc.data() as Map<String, dynamic>;
     return Post(
       id: doc.id,
-      imageUrl: data['imageUrl'] ?? '', // Replace with your field name
+      imageUrl: data['imageUrl'] ?? '',
+      caption: data['caption'] ?? '',
     );
   }
 }
@@ -33,6 +37,23 @@ class ConnectPage extends StatefulWidget {
 class _ConnectPageState extends State<ConnectPage> {
   int _selectedIndex = 1;
   List<Post> _posts = [];
+  bool _loading = false;
+  bool _error = false;
+
+  static final Random _random = Random();
+
+  final List<String> _usernames = [
+    'JohnDoe',
+    'JaneDoe',
+    'Alice',
+    'Bob',
+    'Charlie',
+    // Add more usernames as needed
+  ];
+
+  String _generateRandomUsername() {
+    return _usernames[_random.nextInt(_usernames.length)];
+  }
 
   @override
   void initState() {
@@ -41,13 +62,35 @@ class _ConnectPageState extends State<ConnectPage> {
   }
 
   Future<void> _fetchPosts() async {
-    QuerySnapshot snapshot =
-        await FirebaseFirestore.instance.collection('posts').get();
-    List<Post> posts =
-        snapshot.docs.map((doc) => Post.fromDocument(doc)).toList();
     setState(() {
-      _posts = posts;
+      _loading = true;
     });
+    try {
+      QuerySnapshot snapshot =
+          await FirebaseFirestore.instance.collection('posts').get();
+      List<Post> posts =
+          snapshot.docs.map((doc) => Post.fromDocument(doc)).toList();
+      setState(() {
+        _posts = posts;
+        _error = false;
+      });
+    } catch (e) {
+      print('Error fetching posts: $e');
+      setState(() {
+        _error = true;
+      });
+    } finally {
+      setState(() {
+        _loading = false;
+      });
+    }
+  }
+
+  void _sharePost(String caption, String imageUrl) async {
+    await FlutterShare.share(
+      title: 'Check out this post',
+      text: '$caption\n$imageUrl',
+    );
   }
 
   @override
@@ -75,65 +118,85 @@ class _ConnectPageState extends State<ConnectPage> {
         ],
       ),
       body: SafeArea(
-        child: Stack(
-          children: [
-            Container(
-              alignment: Alignment.center,
-              height: MediaQuery.of(context).size.height,
-              width: MediaQuery.of(context).size.width,
-              decoration: const BoxDecoration(
-                color: Color.fromRGBO(246, 245, 235, 1),
-              ),
-            ),
-            Container(
-              alignment: Alignment.center,
-              child: Container(
-                margin: const EdgeInsets.all(15),
-                height: MediaQuery.of(context).size.height,
-                width: MediaQuery.of(context).size.width,
-                decoration: const BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(10)),
-                  color: Color.fromRGBO(204, 221, 221, 1),
-                ),
-                child: ListView.builder(
-                  itemCount: _posts.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    return Column(
-                      children: [
-                        SizedBox(height: 10),
-                        GestureDetector(
-                          onTap: () {
-                            // Add onTap functionality
-                          },
-                          child: Stack(
-                            alignment: Alignment.bottomRight,
-                            children: [
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(16),
-                                child: Image.network(_posts[index].imageUrl,
-                                    fit: BoxFit.cover,
-                                    width: MediaQuery.of(context).size.width,
-                                    height: MediaQuery.of(context).size.height),
+        child: _loading
+            ? Center(child: CircularProgressIndicator())
+            : _error
+                ? Center(
+                    child: Text(
+                      'Error fetching posts. Please try again later.',
+                      style: TextStyle(
+                        color: Colors.red,
+                        fontSize: 16,
+                      ),
+                    ),
+                  )
+                : ListView.builder(
+                    itemCount: _posts.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      return Column(
+                        children: [
+                          SizedBox(height: 10),
+                          GestureDetector(
+                            onTap: () {
+                              // Add onTap functionality
+                            },
+                            child: Card(
+                              margin: EdgeInsets.symmetric(horizontal: 8),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Text(
+                                      '${_generateRandomUsername()}: ${_posts[index].caption}', // Display random username
+                                      style: TextStyle(
+                                        color: const Color.fromARGB(
+                                            255, 26, 25, 25),
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                  ),
+                                  InkWell(
+                                    onTap: () {
+                                      print(_posts[index].imageUrl);
+                                      // Add onTap functionality
+                                    },
+                                    child: Image.network(
+                                      _posts[index].imageUrl,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      IconButton(
+                                        onPressed: () {
+                                          // Add like functionality
+                                        },
+                                        icon: Icon(Icons.favorite),
+                                        color: Colors.red,
+                                        iconSize: 30,
+                                      ),
+                                      IconButton(
+                                        onPressed: () {
+                                          _sharePost(_posts[index].caption,
+                                              _posts[index].imageUrl);
+                                        },
+                                        icon: Icon(Icons.share),
+                                        color: Colors.blue,
+                                        iconSize: 30,
+                                      ),
+                                    ],
+                                  ),
+                                ],
                               ),
-                              IconButton(
-                                onPressed: () {
-                                  // Add like functionality
-                                },
-                                icon: Icon(Icons.favorite),
-                                color: Colors.red,
-                                iconSize: 30,
-                              ),
-                            ],
+                            ),
                           ),
-                        ),
-                      ],
-                    );
-                  },
-                ),
-              ),
-            ),
-          ],
-        ),
+                        ],
+                      );
+                    },
+                  ),
       ),
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: const Color.fromRGBO(97, 166, 171, 1),
