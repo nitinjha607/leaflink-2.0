@@ -14,7 +14,7 @@ import 'package:leaflink/pages/settingpages/notification_page.dart';
 import 'package:leaflink/pages/leaderboard_page.dart';
 import 'package:leaflink/pages/eventmanagement_page.dart';
 import 'package:leaflink/pages/Create_Post_Page.dart';
-import 'package:leaflink/pages/added_events.dart'; // Import the AddedEventsPage
+import 'package:leaflink/pages/added_events.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,6 +26,7 @@ void main() async {
       appId: '821697692793:android:195ad8509aa13d7ac400a8',
       messagingSenderId: '821697692793',
       storageBucket: 'leaf-link-1e912.appspot.com',
+
     ),
   );
   runApp(MyApp());

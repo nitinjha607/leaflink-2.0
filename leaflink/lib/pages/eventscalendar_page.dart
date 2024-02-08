@@ -106,6 +106,7 @@ class _CalendarPageState extends State<CalendarPage> {
           }
         },
       ),
+
       floatingActionButton: Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
@@ -127,6 +128,7 @@ class _CalendarPageState extends State<CalendarPage> {
             backgroundColor: const Color.fromRGBO(97, 166, 171, 1),
           ),
         ],
+
       ),
     );
   }
