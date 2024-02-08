@@ -1,10 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class LanguagePage extends StatelessWidget {
+class LanguagePage extends StatefulWidget {
   static const String routeName = 'language_page';
 
-  const LanguagePage({super.key});
+  const LanguagePage({Key? key}) : super(key: key);
+
+  @override
+  _LanguagePageState createState() => _LanguagePageState();
+}
+
+class _LanguagePageState extends State<LanguagePage> {
+  String? selectedLanguage;
+  String? selectedRegion;
 
   void back(BuildContext context) {
     Navigator.of(context).pop();
@@ -51,9 +59,85 @@ class LanguagePage extends StatelessWidget {
                   borderRadius: BorderRadius.all(Radius.circular(10)),
                   color: Color.fromRGBO(204, 221, 221, 1),
                 ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    SizedBox(height: 20),
+                    _buildDropdownButton(
+                      labelText: 'Select Language',
+                      value: selectedLanguage,
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          selectedLanguage = newValue;
+                        });
+                      },
+                      items: ['Hindi', 'Spanish', 'French', 'English'],
+                    ),
+                    SizedBox(height: 20),
+                    _buildDropdownButton(
+                      labelText: 'Select Region',
+                      value: selectedRegion,
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          selectedRegion = newValue;
+                        });
+                      },
+                      items: ['USA', 'Canada', 'UK', 'France', 'India'],
+                    ),
+                    Spacer(),
+                    ElevatedButton(
+                      onPressed: () {
+                        // Handle save options
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                                'This feature will be available in the future'),
+                          ),
+                        );
+                      },
+                      child: Text('Save Options'),
+                    ),
+                    SizedBox(height: 20),
+                  ],
+                ),
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDropdownButton({
+    required String labelText,
+    required String? value,
+    required ValueChanged<String?> onChanged,
+    required List<String> items,
+  }) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 16),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Colors.grey),
+      ),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton<String>(
+          value: value,
+          onChanged: onChanged,
+          isExpanded: true,
+          icon: Icon(Icons.arrow_drop_down),
+          iconSize: 36,
+          hint: Text(labelText),
+          style: TextStyle(
+            fontSize: 16,
+            color: Colors.black,
+          ),
+          items: items.map<DropdownMenuItem<String>>((String item) {
+            return DropdownMenuItem<String>(
+              value: item,
+              child: Text(item),
+            );
+          }).toList(),
         ),
       ),
     );
