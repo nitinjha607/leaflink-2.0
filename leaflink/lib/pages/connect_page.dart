@@ -36,7 +36,7 @@ class Post {
       caption: data['caption'] ?? '',
       username: username,
       likes: data['likes'] ?? 0,
-      likedBy: data['likedby'] ?? [],
+      likedBy: List<String>.from(data['likedBy'] ?? []),
     );
   }
 }
