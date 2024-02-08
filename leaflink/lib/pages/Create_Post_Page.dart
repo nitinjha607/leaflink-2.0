@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class CreatePostPage extends StatefulWidget {
   static const String routeName = 'create_post_page';
@@ -20,7 +21,8 @@ class _CreatePostPageState extends State<CreatePostPage> {
   bool isLoading = false;
 
   Future<void> _selectImage() async {
-    final pickedFile = await _imagePicker.pickImage(source: ImageSource.gallery);
+    final pickedFile =
+        await _imagePicker.pickImage(source: ImageSource.gallery);
 
     if (pickedFile != null) {
       setState(() {
@@ -28,6 +30,7 @@ class _CreatePostPageState extends State<CreatePostPage> {
       });
     }
   }
+
   Future<void> postImage() async {
     setState(() {
       isLoading = true;
@@ -43,12 +46,16 @@ class _CreatePostPageState extends State<CreatePostPage> {
 
       // Get download URL
       final String downloadURL = await ref.getDownloadURL();
+      final String userEmail = FirebaseAuth.instance.currentUser!.email!;
 
       // Save post to Firestore
       await FirebaseFirestore.instance.collection('posts').add({
         'imageUrl': downloadURL,
         'caption': _captionController.text,
         'timestamp': Timestamp.now(),
+        'email': userEmail,
+        'likes': 0,
+        'likedBy': [],
       });
 
       // Hide loading indicator
@@ -71,6 +78,7 @@ class _CreatePostPageState extends State<CreatePostPage> {
       showSnackBar('Error creating post. Please try again.');
     }
   }
+
   void showSnackBar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -79,6 +87,7 @@ class _CreatePostPageState extends State<CreatePostPage> {
       ),
     );
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -96,74 +105,74 @@ class _CreatePostPageState extends State<CreatePostPage> {
       body: isLoading
           ? Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              SizedBox(height: 16),
-              Container(
-                height: 200,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  color:Color.fromRGBO(97, 166, 171, 1),
-                ),
-                child: InkWell(
-                  onTap: _selectImage,
-                  child: _image != null
-                      ? ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: Image.file(
-                      _image!,
-                      width: double.infinity,
-                      height: double.infinity,
-                      fit: BoxFit.cover,
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    SizedBox(height: 16),
+                    Container(
+                      height: 200,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        color: Color.fromRGBO(97, 166, 171, 1),
+                      ),
+                      child: InkWell(
+                        onTap: _selectImage,
+                        child: _image != null
+                            ? ClipRRect(
+                                borderRadius: BorderRadius.circular(10),
+                                child: Image.file(
+                                  _image!,
+                                  width: double.infinity,
+                                  height: double.infinity,
+                                  fit: BoxFit.cover,
+                                ),
+                              )
+                            : Center(
+                                child: Icon(
+                                  Icons.camera_alt,
+                                  color: Colors.black,
+                                  size: 50,
+                                ),
+                              ),
+                      ),
                     ),
-                  )
-                      : Center(
-                    child: Icon(
-                      Icons.camera_alt,
-                      color: Colors.black,
-                      size: 50,
+                    SizedBox(height: 16),
+                    TextField(
+                      controller: _captionController,
+                      decoration: InputDecoration(
+                        labelText: 'Write a caption...',
+                        border: OutlineInputBorder(),
+                        filled: true,
+                        fillColor: Colors.grey[200],
+                      ),
+                      maxLines: 4,
                     ),
-                  ),
+                    SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: postImage,
+                      style: ElevatedButton.styleFrom(
+                        primary: Color.fromRGBO(97, 166, 171, 1),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        child: Text(
+                          'Share',
+                          style: TextStyle(
+                            fontSize: 18,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              SizedBox(height: 16),
-              TextField(
-                controller: _captionController,
-                decoration: InputDecoration(
-                  labelText: 'Write a caption...',
-                  border: OutlineInputBorder(),
-                  filled: true,
-                  fillColor: Colors.grey[200],
-                ),
-                maxLines: 4,
-              ),
-              SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: postImage,
-                style: ElevatedButton.styleFrom(
-                  primary:Color.fromRGBO(97, 166, 171, 1),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  child: Text(
-                    'Share',
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
+            ),
     );
   }
 }

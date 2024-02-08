@@ -13,6 +13,8 @@ import 'package:leaflink/pages/settingpages/language_page.dart';
 import 'package:leaflink/pages/settingpages/notification_page.dart';
 import 'package:leaflink/pages/leaderboard_page.dart';
 import 'package:leaflink/pages/eventmanagement_page.dart';
+import 'package:leaflink/pages/Create_Post_Page.dart';
+import 'package:leaflink/pages/added_events.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,6 +25,8 @@ void main() async {
       projectId: 'leaf-link-1e912',
       appId: '821697692793:android:195ad8509aa13d7ac400a8',
       messagingSenderId: '821697692793',
+      storageBucket: 'leaf-link-1e912.appspot.com',
+
     ),
   );
   runApp(MyApp());
@@ -52,6 +56,9 @@ class MyApp extends StatelessWidget {
         LanguagePage.routeName: (BuildContext context) => const LanguagePage(),
         EventManagementPage.routeName: (BuildContext context) =>
             EventManagementPage(),
+        CreatePostPage.routeName: (BuildContext context) =>
+            const CreatePostPage(),
+        AddedEventsPage.routeName: (BuildContext context) => AddedEventsPage(),
       },
     );
   }
