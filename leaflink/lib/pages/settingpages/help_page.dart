@@ -19,7 +19,7 @@ class HelpPage extends StatelessWidget {
           "Help & Support",
           style: TextStyle(
             fontFamily: GoogleFonts.comfortaa().fontFamily,
-            fontSize: MediaQuery.of(context).size.height * 0.04,
+            fontSize: MediaQuery.of(context).size.height * 0.03,
             color: const Color.fromRGBO(16, 25, 22, 1),
           ),
         ),
@@ -129,10 +129,6 @@ class HelpPage extends StatelessWidget {
                       _buildQuestion(" How do I delete my account?"),
                       _buildAnswer(
                           "   Open the settings tab and you will see the delete account option, simply click on it confirm deletion and logout of the application.\n\n"),
-                      _buildQuestion(
-                          " How is the graphical data calculated and what are the sources used?"),
-                      _buildAnswer(
-                          "   The graphical data is calculated based on estimates and averages from reputable sources for each waste category. Sources include Environmental Paper Network, Waste Management, Alcoa, Glass Packaging Institute, EPA, Steel Recycling Institute, World Wildlife Fund, and the U.S. EPA. Specific units to save one tree vary by material and are obtained from respective sources or recycling institutes.")
                     ],
                   ),
                 ),
