@@ -1,27 +1,55 @@
-// ignore_for_file: library_private_types_in_public_api, avoid_print, use_build_context_synchronously
+// ignore_for_file: library_private_types_in_public_api
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+//import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:webview_flutter/webview_flutter.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:leaflink/pages/connect_page.dart';
 import 'package:leaflink/pages/eventscalendar_page.dart';
 import 'package:leaflink/pages/leaderboard_page.dart';
 import 'package:leaflink/auth/login_or_register.dart';
 import 'package:leaflink/pages/settingpages/editprofile_page.dart';
 import 'package:leaflink/pages/settingpages/help_page.dart';
-import 'package:leaflink/pages/settingpages/privacy_page.dart';
 import 'package:leaflink/pages/settingpages/language_page.dart';
 import 'package:leaflink/pages/settingpages/notification_page.dart';
 import 'package:leaflink/pages/graphicaldata/chart_container.dart';
 import 'package:leaflink/pages/graphicaldata/bar_chart.dart';
+import 'dart:io';
+import 'package:flutter/services.dart';
+//import 'package:image_cropper/image_cropper.dart';
+
+//import 'package:http/http.dart' as http;
+//import 'dart:convert';
 
 class HomePage extends StatefulWidget {
   static const String routeName = 'home_page';
 
-  const HomePage({super.key});
+  const HomePage({Key? key}) : super(key: key);
 
   @override
   _HomePageState createState() => _HomePageState();
+}
+
+class WebViewPage extends StatelessWidget {
+  final String url;
+
+  const WebViewPage({Key? key, required this.url}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('WebView'),
+      ),
+      body: WebView(
+        initialUrl: url,
+        javascriptMode: JavascriptMode.unrestricted,
+      ),
+    );
+  }
 }
 
 class _HomePageState extends State<HomePage> {
@@ -30,6 +58,11 @@ class _HomePageState extends State<HomePage> {
   final searchController = TextEditingController();
   DateTime now = DateTime.now();
   final int currentMonth = DateTime.now().month;
+  final ImagePicker _picker =
+      ImagePicker(); // Create an instance of ImagePicker
+  File? capturedImage; // Define File variable to store the captured image
+  List<XFile> images = [];
+  String imageProcessingResponseText = '';
 
   String monthName(int monthNumber) {
     switch (monthNumber) {
@@ -62,8 +95,85 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-//camerafunction
-  void camerafunction() {}
+//function for camera redirect
+  Future<void> captureImageAndRedirect() async {
+    final pickedFile = await _picker.pickImage(source: ImageSource.camera);
+
+    if (pickedFile != null) {
+      print('Image captured from camera: ${pickedFile.path}');
+
+      final String renamedPath = '${Directory.systemTemp.path}/temp.jpeg';
+      final File renamedImage = File(renamedPath);
+      await pickedFile.saveTo(renamedImage.path);
+
+      setState(() {
+        capturedImage = renamedImage;
+      });
+
+      if (capturedImage != null) {
+        final imageUrl = await uploadImageToFirebase(capturedImage!);
+
+        if (imageUrl.isNotEmpty) {
+          navigateToWebView('https://leaf-link-1e912.web.app/');
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text('Failed to upload image to Firebase.'),
+          ));
+        }
+      } else {
+        print('Captured image is null.');
+      }
+    } else {
+      print('Image capture from camera canceled.');
+    }
+  }
+
+// Function to navigate to WebView page
+  Future<void> navigateToWebView(String url) async {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Center(child: CircularProgressIndicator());
+      },
+    );
+
+    await Future.delayed(Duration(seconds: 2)); // Simulating loading time
+
+    await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => WebViewPage(url: url)),
+    );
+
+    // Dismiss loading screen
+    Navigator.pop(context);
+
+    // Show snackbar for login
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text('If desired response not achieved, please login again.'),
+    ));
+  }
+
+// Function to upload the image to Firebase storage
+  Future<String> uploadImageToFirebase(File imageFile) async {
+    try {
+      final firebase_storage.Reference storageRef =
+          firebase_storage.FirebaseStorage.instance.ref().child("images");
+      // Generate a unique filename based on the current timestamp
+      final String fileName = "temp.jpg"; // Change the filename here
+      final firebase_storage.UploadTask uploadTask =
+          storageRef.child(fileName).putFile(imageFile);
+
+      final firebase_storage.TaskSnapshot taskSnapshot =
+          await uploadTask.whenComplete(() => null);
+      final String imageUrl = await taskSnapshot.ref.getDownloadURL();
+
+      return imageUrl;
+    } catch (e) {
+      print('Error uploading image to Firebase: $e');
+      return '';
+    }
+  }
+
   // Function to handle user logout
   Future<void> logoutUser(BuildContext context) async {
     try {
@@ -74,8 +184,7 @@ class _HomePageState extends State<HomePage> {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) =>
-              const LogInOrRegister(), // Your login page widget
+          builder: (context) => LogInOrRegister(), // Your login page widget
         ),
       );
     } catch (e) {
@@ -94,20 +203,19 @@ class _HomePageState extends State<HomePage> {
         print('User account deleted successfully');
 
         ScaffoldMessenger.of(_scaffoldKey.currentContext!).showSnackBar(
-          const SnackBar(
+          SnackBar(
             content: Text('Your account has been deleted. Please logout.'),
           ),
         );
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) =>
-                const LogInOrRegister(), // Your login page widget
+            builder: (context) => LogInOrRegister(), // Your login page widget
           ),
         );
       } else {
         ScaffoldMessenger.of(_scaffoldKey.currentContext!).showSnackBar(
-          const SnackBar(
+          SnackBar(
             content: Text('Your account has been deleted. Please logout.'),
           ),
         );
@@ -260,10 +368,6 @@ class _HomePageState extends State<HomePage> {
       Navigator.pushNamed(context, HelpPage.routeName);
     }
 
-    void privacy() {
-      Navigator.pushNamed(context, PrivacyPage.routeName);
-    }
-
     void notifications() {
       Navigator.pushNamed(context, NotificationPage.routeName);
     }
@@ -293,7 +397,7 @@ class _HomePageState extends State<HomePage> {
             Container(
               alignment: Alignment.bottomLeft,
               width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height * 0.9,
+              height: MediaQuery.of(context).size.height * 0.8,
               decoration: const BoxDecoration(
                 color: Color.fromRGBO(204, 221, 221, 1),
                 borderRadius: BorderRadius.only(
@@ -321,7 +425,7 @@ class _HomePageState extends State<HomePage> {
             Container(
               alignment: Alignment.bottomLeft,
               width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height * 0.8,
+              height: MediaQuery.of(context).size.height * 0.7,
               decoration: const BoxDecoration(
                 color: Color.fromRGBO(192, 215, 215, 1),
                 borderRadius: BorderRadius.only(
@@ -348,7 +452,7 @@ class _HomePageState extends State<HomePage> {
             Container(
               alignment: Alignment.bottomLeft,
               width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height * 0.7,
+              height: MediaQuery.of(context).size.height * 0.6,
               decoration: const BoxDecoration(
                 color: Color.fromRGBO(180, 209, 210, 1),
                 borderRadius: BorderRadius.only(
@@ -368,32 +472,6 @@ class _HomePageState extends State<HomePage> {
                 onTap: notifications,
               ),
             ),
-
-            //privacy
-            Container(
-              alignment: Alignment.bottomLeft,
-              width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height * 0.6,
-              decoration: const BoxDecoration(
-                color: Color.fromRGBO(165, 202, 203, 1),
-                borderRadius: BorderRadius.only(
-                    bottomRight: Radius.circular(25), topRight: Radius.zero),
-              ),
-              child: ListTile(
-                title: Text("Privacy",
-                    style: TextStyle(
-                      fontFamily: GoogleFonts.comfortaa().fontFamily,
-                      fontSize: MediaQuery.of(context).size.height * 0.025,
-                      color: const Color.fromRGBO(16, 25, 22, 1),
-                    )),
-                leading: const Icon(
-                  CupertinoIcons.shield_lefthalf_fill,
-                  color: Color.fromRGBO(16, 25, 22, 1),
-                ),
-                onTap: privacy,
-              ),
-            ),
-
             //help
             Container(
               alignment: Alignment.bottomLeft,
@@ -455,7 +533,7 @@ class _HomePageState extends State<HomePage> {
                     bottomRight: Radius.circular(25), topRight: Radius.zero),
               ),
               child: ListTile(
-                title: Text("Edit Profile",
+                title: Text("View Profile",
                     style: TextStyle(
                       fontFamily: GoogleFonts.comfortaa().fontFamily,
                       fontSize: MediaQuery.of(context).size.height * 0.025,
@@ -591,74 +669,29 @@ class _HomePageState extends State<HomePage> {
               ),
               Positioned(
                 top: MediaQuery.of(context).size.height * 0.15,
-                left: MediaQuery.of(context).size.width * 0,
+                left: MediaQuery.of(context).size.width * -0.02,
                 child: Container(
                     padding: EdgeInsets.all(
                       MediaQuery.of(context).size.height * 0.009,
                     ),
-                    child: Row(
-                      children: [
-                        SizedBox(
-                            width: MediaQuery.of(context).size.width * 0.65,
-                            height: MediaQuery.of(context).size.height * 0.07,
-                            child: TextField(
-                              style: TextStyle(
-                                  fontSize: MediaQuery.of(context).size.height *
-                                      0.025),
-                              controller: searchController,
-                              obscureText: false,
-                              decoration: InputDecoration(
-                                  enabledBorder: const OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                        color:
-                                            Color.fromRGBO(246, 245, 235, 1)),
-                                  ),
-                                  focusedBorder: const OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                        color:
-                                            Color.fromRGBO(246, 245, 235, 1)),
-                                  ),
-                                  fillColor:
-                                      const Color.fromRGBO(246, 245, 235, 1),
-                                  filled: true,
-                                  hintText: "SEARCH",
-                                  hintStyle: TextStyle(
-                                    color: const Color.fromRGBO(57, 80, 92, 1),
-                                    fontFamily:
-                                        GoogleFonts.comfortaa().fontFamily,
-                                    fontSize:
-                                        MediaQuery.of(context).size.height *
-                                            0.025,
-                                  ),
-                                  suffixIcon: Icon(
-                                    Icons.search_rounded,
-                                    color: const Color.fromRGBO(57, 80, 92, 1),
-                                    size: MediaQuery.sizeOf(context).height *
-                                        0.035,
-                                  )),
-                            )),
-                        Container(
-                            margin: const EdgeInsets.all(15),
-                            width: MediaQuery.of(context).size.height * 0.07,
-                            height: MediaQuery.of(context).size.height * 0.07,
-                            decoration: const BoxDecoration(
-                              color: Color.fromRGBO(246, 245, 235, 1),
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(3)),
-                            ),
-                            child: InkWell(
-                              onTap: camerafunction,
-                              child: Container(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Icon(
-                                  Icons.camera_alt,
-                                  color: const Color.fromRGBO(57, 80, 92, 1),
-                                  size: MediaQuery.of(context).size.height *
-                                      0.035,
-                                ),
-                              ),
-                            ))
-                      ],
+                    child: Container(
+                      margin: const EdgeInsets.all(15),
+                      width: MediaQuery.of(context).size.width * 0.7,
+                      height: MediaQuery.of(context).size.height * 0.07,
+                      decoration: const BoxDecoration(
+                        color: Color.fromRGBO(246, 245, 235, 1),
+                        borderRadius: BorderRadius.all(Radius.circular(3)),
+                      ),
+                      child: IconButton(
+                        icon: Icon(
+                          Icons.camera_alt,
+                          color: const Color.fromRGBO(57, 80, 92, 1),
+                          size: MediaQuery.sizeOf(context).height * 0.035,
+                        ),
+                        onPressed: () {
+                          captureImageAndRedirect();
+                        },
+                      ),
                     )),
               )
             ],
