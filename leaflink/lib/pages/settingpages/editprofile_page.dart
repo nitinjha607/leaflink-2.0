@@ -16,10 +16,10 @@ class EditProfilePage extends StatelessWidget {
       appBar: AppBar(
         toolbarHeight: MediaQuery.of(context).size.height * 0.075,
         title: Text(
-          "Edit Profile",
+          "View Profile",
           style: TextStyle(
             fontFamily: GoogleFonts.comfortaa().fontFamily,
-            fontSize: MediaQuery.of(context).size.height * 0.04,
+            fontSize: MediaQuery.of(context).size.height * 0.03,
             color: const Color.fromRGBO(16, 25, 22, 1),
           ),
         ),
