@@ -22,7 +22,7 @@ Welcome to Leaflink, your go-to companion for making a positive impact on the en
 
 2. **Install dependecies**
    ```bash
-    cd leaflink-2.0
+    cd leaflink
     flutter pub get
    
 3. **Run the app**
