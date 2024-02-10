@@ -19,7 +19,7 @@ class NotificationPage extends StatelessWidget {
           "Notification",
           style: TextStyle(
             fontFamily: GoogleFonts.comfortaa().fontFamily,
-            fontSize: MediaQuery.of(context).size.height * 0.04,
+            fontSize: MediaQuery.of(context).size.height * 0.03,
             color: const Color.fromRGBO(16, 25, 22, 1),
           ),
         ),
@@ -50,6 +50,18 @@ class NotificationPage extends StatelessWidget {
                 decoration: const BoxDecoration(
                   borderRadius: BorderRadius.all(Radius.circular(10)),
                   color: Color.fromRGBO(204, 221, 221, 1),
+                ),
+                child: Padding(
+                  padding: EdgeInsets.only(
+                    top: MediaQuery.of(context).size.height * 0.4,
+                  ),
+                  child: Text(
+                    'This feature will be available soon',
+                    style: TextStyle(
+                        fontSize: MediaQuery.sizeOf(context).width * 0.04,
+                        fontFamily: GoogleFonts.kohSantepheap().fontFamily),
+                    textAlign: TextAlign.center,
+                  ),
                 ),
               ),
             ),
