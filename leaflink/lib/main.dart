@@ -8,7 +8,6 @@ import 'package:leaflink/pages/forgotpass_page.dart';
 import 'package:leaflink/pages/home_page.dart';
 import 'package:leaflink/pages/settingpages/editprofile_page.dart';
 import 'package:leaflink/pages/settingpages/help_page.dart';
-import 'package:leaflink/pages/settingpages/privacy_page.dart';
 import 'package:leaflink/pages/settingpages/language_page.dart';
 import 'package:leaflink/pages/settingpages/notification_page.dart';
 import 'package:leaflink/pages/leaderboard_page.dart';
@@ -26,7 +25,6 @@ void main() async {
       appId: '821697692793:android:195ad8509aa13d7ac400a8',
       messagingSenderId: '821697692793',
       storageBucket: 'leaf-link-1e912.appspot.com',
-
     ),
   );
   runApp(MyApp());
@@ -52,7 +50,6 @@ class MyApp extends StatelessWidget {
         HelpPage.routeName: (BuildContext context) => const HelpPage(),
         NotificationPage.routeName: (BuildContext context) =>
             const NotificationPage(),
-        PrivacyPage.routeName: (BuildContext context) => const PrivacyPage(),
         LanguagePage.routeName: (BuildContext context) => const LanguagePage(),
         EventManagementPage.routeName: (BuildContext context) =>
             EventManagementPage(),
