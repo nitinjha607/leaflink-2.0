@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:leaflink/components/my_button.dart';
 
 class LanguagePage extends StatefulWidget {
   static const String routeName = 'language_page';
@@ -27,7 +28,7 @@ class _LanguagePageState extends State<LanguagePage> {
           "Language and Region",
           style: TextStyle(
             fontFamily: GoogleFonts.comfortaa().fontFamily,
-            fontSize: MediaQuery.of(context).size.height * 0.04,
+            fontSize: MediaQuery.of(context).size.height * 0.03,
             color: const Color.fromRGBO(16, 25, 22, 1),
           ),
         ),
@@ -62,42 +63,49 @@ class _LanguagePageState extends State<LanguagePage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    SizedBox(height: 20),
-                    _buildDropdownButton(
-                      labelText: 'Select Language',
-                      value: selectedLanguage,
-                      onChanged: (String? newValue) {
-                        setState(() {
-                          selectedLanguage = newValue;
-                        });
-                      },
-                      items: ['Hindi', 'Spanish', 'French', 'English'],
+                    Padding(
+                      padding: EdgeInsets.all(20),
+                      child: _buildDropdownButton(
+                        labelText: 'Select Language',
+                        value: selectedLanguage,
+                        onChanged: (String? newValue) {
+                          setState(() {
+                            selectedLanguage = newValue;
+                          });
+                        },
+                        items: ['Hindi', 'Spanish', 'French', 'English'],
+                      ),
                     ),
-                    SizedBox(height: 20),
-                    _buildDropdownButton(
-                      labelText: 'Select Region',
-                      value: selectedRegion,
-                      onChanged: (String? newValue) {
-                        setState(() {
-                          selectedRegion = newValue;
-                        });
-                      },
-                      items: ['USA', 'Canada', 'UK', 'France', 'India'],
+                    Padding(
+                      padding: EdgeInsets.all(20),
+                      child: _buildDropdownButton(
+                        labelText: 'Select Region',
+                        value: selectedRegion,
+                        onChanged: (String? newValue) {
+                          setState(() {
+                            selectedRegion = newValue;
+                          });
+                        },
+                        items: ['USA', 'Canada', 'UK', 'France', 'India'],
+                      ),
                     ),
                     Spacer(),
-                    ElevatedButton(
-                      onPressed: () {
-                        // Handle save options
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                                'This feature will be available in the future'),
-                          ),
-                        );
-                      },
-                      child: Text('Save Options'),
+                    Padding(
+                      padding: EdgeInsets.all(20),
+                      child: MyButton(
+                        onTap: () {
+                          // Handle save options
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                'This feature will be available in the future',
+                              ),
+                            ),
+                          );
+                        },
+                        text: 'Save and Continue',
+                      ),
                     ),
-                    SizedBox(height: 20),
                   ],
                 ),
               ),
