@@ -154,15 +154,29 @@ class EditProfilePage extends StatelessWidget {
                                               fontWeight: FontWeight.bold,
                                             ),
                                           ),
-                                          subtitle: Image.network(
-                                            data['imageUrl'],
-                                            width: double.infinity,
-                                            height: 200,
-                                            fit: BoxFit.cover,
-                                            errorBuilder:
-                                                (context, error, stackTrace) {
-                                              return Icon(Icons.error);
-                                            },
+                                          subtitle: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Image.network(
+                                                data['imageUrl'],
+                                                width: double.infinity,
+                                                height: 200,
+                                                fit: BoxFit.cover,
+                                                errorBuilder: (context, error,
+                                                    stackTrace) {
+                                                  return Icon(Icons.error);
+                                                },
+                                              ),
+                                              SizedBox(height: 8),
+                                              Text(
+                                                "${data['likes']} Likes",
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 16,
+                                                ),
+                                              ),
+                                            ],
                                           ),
                                         ),
                                         Row(
