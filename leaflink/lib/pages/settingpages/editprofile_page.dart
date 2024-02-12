@@ -73,24 +73,42 @@ class EditProfilePage extends StatelessWidget {
                   );
                 } else {
                   if (snapshot.data!.docs.isEmpty) {
-                    return Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            "No posts found",
-                            style: TextStyle(fontSize: 18),
+                    return Column(
+                      children: [
+                        SizedBox(height: 20),
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 10),
+                          child: Text(
+                            FirebaseAuth
+                                .FirebaseAuth.instance.currentUser!.email!,
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                          ElevatedButton(
-                            onPressed: () {
-                              // Redirect to create post page
-                              Navigator.pushNamed(
-                                  context, CreatePostPage.routeName);
-                            },
-                            child: Text("Create your first post"),
+                        ),
+                        Expanded(
+                          child: Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  "No posts found",
+                                  style: TextStyle(fontSize: 18),
+                                ),
+                                ElevatedButton(
+                                  onPressed: () {
+                                    // Redirect to create post page
+                                    Navigator.pushNamed(
+                                        context, CreatePostPage.routeName);
+                                  },
+                                  child: Text("Create your first post"),
+                                ),
+                              ],
+                            ),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     );
                   }
                   return Column(
