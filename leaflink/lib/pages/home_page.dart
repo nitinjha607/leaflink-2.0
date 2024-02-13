@@ -5,6 +5,7 @@ import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:leaflink/solutionpage.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:leaflink/pages/connect_page.dart';
@@ -19,6 +20,8 @@ import 'package:leaflink/pages/graphicaldata/chart_container.dart';
 import 'package:leaflink/pages/graphicaldata/bar_chart.dart';
 import 'dart:io';
 import 'package:flutter/services.dart';
+import 'package:google_gemini/google_gemini.dart';
+
 //import 'package:image_cropper/image_cropper.dart';
 
 //import 'package:http/http.dart' as http;
@@ -33,31 +36,14 @@ class HomePage extends StatefulWidget {
   _HomePageState createState() => _HomePageState();
 }
 
-class WebViewPage extends StatelessWidget {
-  final String url;
-
-  const WebViewPage({Key? key, required this.url}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('WebView'),
-      ),
-      body: WebView(
-        initialUrl: url,
-        javascriptMode: JavascriptMode.unrestricted,
-      ),
-    );
-  }
-}
-
 class _HomePageState extends State<HomePage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   int _selectedIndex = 0;
   final searchController = TextEditingController();
   DateTime now = DateTime.now();
   final int currentMonth = DateTime.now().month;
+  final gemini =
+      GoogleGemini(apiKey: "AIzaSyBOF5UUEHg4Io02E5p6QkhIPtccXexa5eQ");
   final ImagePicker _picker =
       ImagePicker(); // Create an instance of ImagePicker
   File? capturedImage; // Define File variable to store the captured image
@@ -100,57 +86,16 @@ class _HomePageState extends State<HomePage> {
     final pickedFile = await _picker.pickImage(source: ImageSource.camera);
 
     if (pickedFile != null) {
-      print('Image captured from camera: ${pickedFile.path}');
+      capturedImage = File(pickedFile.path);
 
-      final String renamedPath = '${Directory.systemTemp.path}/temp.jpeg';
-      final File renamedImage = File(renamedPath);
-      await pickedFile.saveTo(renamedImage.path);
+      // Upload the captured image to Firebase Storage
+      final imageUrl = await uploadImageToFirebase(capturedImage!);
 
-      setState(() {
-        capturedImage = renamedImage;
-      });
-
-      if (capturedImage != null) {
-        final imageUrl = await uploadImageToFirebase(capturedImage!);
-
-        if (imageUrl.isNotEmpty) {
-          navigateToWebView('https://leaf-link-1e912.web.app/');
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text('Failed to upload image to Firebase.'),
-          ));
-        }
-      } else {
-        print('Captured image is null.');
-      }
+      // Navigate to the SolutionPage and pass the image URL as a parameter
+      Navigator.pushNamed(context, SolutionPage.routeName, arguments: imageUrl);
     } else {
-      print('Image capture from camera canceled.');
+      print('No image selected.');
     }
-  }
-
-// Function to navigate to WebView page
-  Future<void> navigateToWebView(String url) async {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return Center(child: CircularProgressIndicator());
-      },
-    );
-
-    await Future.delayed(Duration(seconds: 2)); // Simulating loading time
-
-    await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => WebViewPage(url: url)),
-    );
-
-    // Dismiss loading screen
-    Navigator.pop(context);
-
-    // Show snackbar for login
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text('If desired response not achieved, please login again.'),
-    ));
   }
 
 // Function to upload the image to Firebase storage

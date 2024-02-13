@@ -42,6 +42,12 @@ dependencies:
   url_launcher: ^6.2.4
   webview_flutter: ^3.0.0
   http: ^1.2.0
+  firebase_messaging: ^14.7.15
+  google_gemini: ^0.1.2
+  image: ^4.1.7
+  path_provider: ^2.1.2
+
+
 
 
 

@@ -14,6 +14,7 @@ import 'package:leaflink/pages/leaderboard_page.dart';
 import 'package:leaflink/pages/eventmanagement_page.dart';
 import 'package:leaflink/pages/Create_Post_Page.dart';
 import 'package:leaflink/pages/added_events.dart';
+import 'package:leaflink/solutionpage.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -49,13 +50,14 @@ class MyApp extends StatelessWidget {
             const EditProfilePage(),
         HelpPage.routeName: (BuildContext context) => const HelpPage(),
         NotificationPage.routeName: (BuildContext context) =>
-            const NotificationPage(),
+            NotificationPage(),
         LanguagePage.routeName: (BuildContext context) => const LanguagePage(),
         EventManagementPage.routeName: (BuildContext context) =>
             EventManagementPage(),
         CreatePostPage.routeName: (BuildContext context) =>
             const CreatePostPage(),
         AddedEventsPage.routeName: (BuildContext context) => AddedEventsPage(),
+        SolutionPage.routeName: (BuildContext context) => SolutionPage(),
       },
     );
   }
