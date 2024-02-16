@@ -13,6 +13,7 @@ class EventManagementPage extends StatefulWidget {
 }
 
 class _EventManagementPageState extends State<EventManagementPage> {
+  final nameController = TextEditingController();
   final titleController = TextEditingController();
   final venueController = TextEditingController();
   final dateController = TextEditingController();
@@ -22,7 +23,7 @@ class _EventManagementPageState extends State<EventManagementPage> {
   late TimeOfDay _selectedTime;
 
   String _formatDate(DateTime date) {
-    return DateFormat('dd/MM/yyyy').format(date);
+    return DateFormat('MM/dd/yyyy').format(date);
   }
 
   String _formatTime(TimeOfDay timeOfDay) {
@@ -46,7 +47,7 @@ class _EventManagementPageState extends State<EventManagementPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Event Management',
+          'Add Event',
           style: TextStyle(
             fontFamily: GoogleFonts.comfortaa().fontFamily,
             fontSize: MediaQuery.of(context).size.height * 0.03,
@@ -55,65 +56,73 @@ class _EventManagementPageState extends State<EventManagementPage> {
         ),
         backgroundColor: Color.fromRGBO(97, 166, 171, 1),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              MyTextField(
-                controller: titleController,
-                hintText: 'Title',
-                obscureText: false,
-              ),
-              MyTextField(
-                controller: venueController,
-                hintText: 'Venue',
-                obscureText: false,
-              ),
-              Text(
-                'Select Date:',
-                style: TextStyle(
-                  fontFamily: GoogleFonts.kohSantepheap().fontFamily,
-                  fontSize: MediaQuery.of(context).size.height * 0.02,
-                  color: const Color.fromRGBO(16, 25, 22, 1),
+      body: SingleChildScrollView(
+        // Wrap the Column with SingleChildScrollView
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                MyTextField(
+                  controller: titleController,
+                  hintText: 'Title',
+                  obscureText: false,
                 ),
-              ),
-              SizedBox(height: 10),
-              InkWell(
-                onTap: () {
-                  _selectDate(context);
-                },
-                child: IgnorePointer(
-                  child: MyTextField(
-                    controller: dateController,
-                    hintText: 'Date',
-                    obscureText: false,
+                MyTextField(
+                  controller: nameController,
+                  hintText: 'Host',
+                  obscureText: false,
+                ),
+                MyTextField(
+                  controller: venueController,
+                  hintText: 'Venue',
+                  obscureText: false,
+                ),
+                Text(
+                  'Select Date:',
+                  style: TextStyle(
+                    fontFamily: GoogleFonts.kohSantepheap().fontFamily,
+                    fontSize: MediaQuery.of(context).size.height * 0.02,
+                    color: const Color.fromRGBO(16, 25, 22, 1),
                   ),
                 ),
-              ),
-              SizedBox(height: 20),
-              Text(
-                'Select Time:',
-                style: TextStyle(
-                  fontFamily: GoogleFonts.kohSantepheap().fontFamily,
-                  fontSize: MediaQuery.of(context).size.height * 0.02,
-                  color: const Color.fromRGBO(16, 25, 22, 1),
-                ),
-              ),
-              SizedBox(height: 20),
-              _buildTimePicker(),
-              SizedBox(height: 20),
-              Center(
-                child: MyButton(
+                SizedBox(height: 10),
+                InkWell(
                   onTap: () {
-                    _submitForm();
+                    _selectDate(context);
                   },
-                  text: 'Add Event',
+                  child: IgnorePointer(
+                    child: MyTextField(
+                      controller: dateController,
+                      hintText: 'Date',
+                      obscureText: false,
+                    ),
+                  ),
                 ),
-              ),
-            ],
+                SizedBox(height: 20),
+                Text(
+                  'Select Time:',
+                  style: TextStyle(
+                    fontFamily: GoogleFonts.kohSantepheap().fontFamily,
+                    fontSize: MediaQuery.of(context).size.height * 0.02,
+                    color: const Color.fromRGBO(16, 25, 22, 1),
+                  ),
+                ),
+                SizedBox(height: 20),
+                _buildTimePicker(),
+                SizedBox(height: 20),
+                Center(
+                  child: MyButton(
+                    onTap: () {
+                      _submitForm();
+                    },
+                    text: 'Add Event',
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -172,6 +181,7 @@ class _EventManagementPageState extends State<EventManagementPage> {
     collRef
         .add({
           'title': titleController.text,
+          'name': nameController.text,
           'venue': venueController.text,
           'date': _formatDate(_selectedDate),
           'time': _formatTime(_selectedTime),
@@ -182,6 +192,7 @@ class _EventManagementPageState extends State<EventManagementPage> {
               ),
               titleController.clear(),
               venueController.clear(),
+              nameController.clear(),
             })
         .catchError((error) {
           ScaffoldMessenger.of(context).showSnackBar(
