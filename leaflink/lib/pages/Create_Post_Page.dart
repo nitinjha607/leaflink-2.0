@@ -4,6 +4,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:image/image.dart' as img;
+import 'package:path_provider/path_provider.dart';
 
 class CreatePostPage extends StatefulWidget {
   static const String routeName = 'create_post_page';
@@ -35,6 +37,21 @@ class _CreatePostPageState extends State<CreatePostPage> {
     if (pickedFile != null) {
       setState(() {
         _image = File(pickedFile.path);
+      });
+
+      // Resize the image
+      final bytes = await pickedFile.readAsBytes();
+      final image = img.decodeImage(bytes);
+      final resizedImage =
+          img.copyResize(image!, width: 300); // Adjust the width as needed
+
+      final tempDir = await getTemporaryDirectory();
+      final tempPath = tempDir.path;
+      final compressedImage = File('$tempPath/image.jpg')
+        ..writeAsBytesSync(img.encodeJpg(resizedImage));
+
+      setState(() {
+        _image = compressedImage;
       });
     }
   }
