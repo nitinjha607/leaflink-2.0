@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:leaflink/components/my_textfield.dart';
 import 'package:leaflink/components/my_button.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class EventManagementPage extends StatefulWidget {
   static const String routeName = 'eventmanagement_page';
@@ -185,6 +186,7 @@ class _EventManagementPageState extends State<EventManagementPage> {
           'venue': venueController.text,
           'date': _formatDate(_selectedDate),
           'time': _formatTime(_selectedTime),
+          'userEmail': FirebaseAuth.instance.currentUser!.email,
         })
         .then((value) => {
               ScaffoldMessenger.of(context).showSnackBar(

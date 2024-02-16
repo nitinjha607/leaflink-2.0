@@ -1,13 +1,12 @@
 import 'dart:math';
+import 'package:leaflink/pages/eventscalendar_page.dart';
+import 'package:leaflink/pages/leaderboard_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_share/flutter_share.dart';
-import 'package:leaflink/pages/Create_Post_Page.dart';
-import 'package:leaflink/pages/eventscalendar_page.dart';
-import 'package:leaflink/pages/home_page.dart';
-import 'package:leaflink/pages/leaderboard_page.dart';
 import 'package:firebase_auth/firebase_auth.dart' as FirebaseAuth;
+import 'package:leaflink/pages/home_page.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class Post {
   final String id;
@@ -16,6 +15,7 @@ class Post {
   final String username;
   int likes;
   List<String> likedBy;
+  bool reported;
 
   Post({
     required this.id,
@@ -24,6 +24,7 @@ class Post {
     required this.username,
     required this.likes,
     required this.likedBy,
+    required this.reported,
   });
 
   factory Post.fromDocument(DocumentSnapshot doc) {
@@ -37,6 +38,7 @@ class Post {
       username: username,
       likes: data['likes'] ?? 0,
       likedBy: List<String>.from(data['likedBy'] ?? []),
+      reported: data['reported'] ?? false,
     );
   }
 }
@@ -54,79 +56,117 @@ class PostCard extends StatefulWidget {
 
 class _PostCardState extends State<PostCard> {
   bool _isLiked = false;
+  int? _selectedOption;
+
+  final _reportOptions = [
+    'Option 1',
+    'Option 2',
+    'Option 3',
+  ];
 
   @override
   void initState() {
     super.initState();
-    // Check if the post is liked by the current user
     _isLiked = widget.post.likedBy
         .contains(FirebaseAuth.FirebaseAuth.instance.currentUser!.email);
   }
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          widget.onLike(widget.post);
-          _isLiked = !_isLiked; // Toggle the liked status
-        });
-      },
-      child: Card(
-        margin: EdgeInsets.symmetric(horizontal: 8),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+    final random = Random();
+    final randomAnimalIcon = Icons.pets;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
           children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                '${widget.post.username}: ${widget.post.caption}',
-                style: TextStyle(
-                  color: const Color.fromARGB(255, 26, 25, 25),
-                  fontSize: 16,
-                ),
+            CircleAvatar(
+              backgroundColor: Colors.blue,
+              child: Icon(
+                randomAnimalIcon,
+                color: Colors.white,
               ),
             ),
-            InkWell(
-              onTap: () {
-                print(widget.post.imageUrl);
-              },
-              child: Image.network(
-                widget.post.imageUrl,
-                fit: BoxFit.cover,
+            SizedBox(width: 8),
+            Text(
+              widget.post.username,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
               ),
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            Spacer(),
+            if (!widget.post.reported)
+              IconButton(
+                onPressed: _showReportDialog,
+                icon: Icon(Icons.report),
+              ),
+          ],
+        ),
+        SizedBox(height: 8),
+        Padding(
+          padding: const EdgeInsets.only(left: 8.0),
+          child: Text(
+            widget.post.caption,
+            style: TextStyle(fontSize: 16),
+          ),
+        ),
+        SizedBox(height: 8),
+        GestureDetector(
+          onTap: () {
+            setState(() {
+              widget.onLike(widget.post);
+              _isLiked = !_isLiked;
+            });
+          },
+          child: Card(
+            margin: EdgeInsets.symmetric(horizontal: 8),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                IconButton(
-                  onPressed: () {
-                    setState(() {
-                      widget.onLike(widget.post);
-                      _isLiked = !_isLiked; // Toggle the liked status
-                    });
+                InkWell(
+                  onTap: () {
+                    print(widget.post.imageUrl);
                   },
-                  icon: Icon(Icons.favorite),
-                  color: _isLiked ? Colors.red : Colors.grey,
-                  iconSize: 30,
+                  child: Image.network(
+                    widget.post.imageUrl,
+                    fit: BoxFit.cover,
+                  ),
                 ),
-                Text(
-                  '${widget.post.likes} Likes',
-                  style: TextStyle(fontSize: 16),
-                ),
-                IconButton(
-                  onPressed: () {
-                    _sharePost(widget.post.caption, widget.post.imageUrl);
-                  },
-                  icon: Icon(Icons.share),
-                  color: Colors.blue,
-                  iconSize: 30,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    IconButton(
+                      onPressed: () {
+                        setState(() {
+                          widget.onLike(widget.post);
+                          _isLiked = !_isLiked;
+                        });
+                      },
+                      icon: Icon(Icons.favorite),
+                      color: _isLiked ? Colors.red : Colors.grey,
+                      iconSize: 30,
+                    ),
+                    Text(
+                      '${widget.post.likes} Likes',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                    IconButton(
+                      onPressed: () {
+                        _sharePost(widget.post.caption, widget.post.imageUrl);
+                      },
+                      icon: Icon(Icons.share),
+                      color: Colors.blue,
+                      iconSize: 30,
+                    ),
+                  ],
                 ),
               ],
             ),
-          ],
+          ),
         ),
-      ),
+      ],
     );
   }
 
@@ -135,6 +175,85 @@ class _PostCardState extends State<PostCard> {
       title: 'Check out this post',
       text: '$caption\n$imageUrl',
     );
+  }
+
+  void _showReportDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: Text('Report Post'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  for (int i = 0; i < _reportOptions.length; i++)
+                    RadioListTile(
+                      title: Text(_reportOptions[i]),
+                      value: i,
+                      groupValue: _selectedOption,
+                      onChanged: (value) {
+                        setState(() {
+                          _selectedOption = value as int?;
+                        });
+                      },
+                    ),
+                ],
+              ),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('Cancel'),
+                ),
+                ElevatedButton(
+                  onPressed: _selectedOption != null ? _submitReport : null,
+                  child: Text('Submit'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void _submitReport() async {
+    if (_selectedOption != null) {
+      try {
+        await FirebaseFirestore.instance.collection('reports').add({
+          'option': _reportOptions[_selectedOption!],
+          'timestamp': FieldValue.serverTimestamp(),
+        });
+        setState(() {
+          widget.post.reported = true;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Report submitted successfully'),
+            duration: Duration(seconds: 2),
+          ),
+        );
+        Navigator.of(context).pop();
+      } catch (e) {
+        print('Error submitting report: $e');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error submitting report. Please try again later.'),
+            duration: Duration(seconds: 2),
+          ),
+        );
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Please select a report option'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+    }
   }
 }
 
@@ -169,7 +288,7 @@ class _ConnectPageState extends State<ConnectPage> {
       if (snapshot.docs.isNotEmpty) {
         List<Post> posts = snapshot.docs
             .map((doc) => Post.fromDocument(doc))
-            .where((post) => post != null) // Filter out null posts
+            .where((post) => post != null)
             .toList();
         setState(() {
           _posts = posts;
@@ -194,24 +313,19 @@ class _ConnectPageState extends State<ConnectPage> {
 
   void _handleLike(Post post) {
     setState(() {
-      // Check if the current user has already liked the post
       bool alreadyLiked = post.likedBy
           .contains(FirebaseAuth.FirebaseAuth.instance.currentUser!.email);
-
-      // If the user already liked the post, remove the like
       if (alreadyLiked) {
         post.likes--;
         post.likedBy
             .remove(FirebaseAuth.FirebaseAuth.instance.currentUser!.email!);
       } else {
-        // If the user hasn't liked the post, add the like
         post.likes++;
         post.likedBy
             .add(FirebaseAuth.FirebaseAuth.instance.currentUser!.email!);
       }
     });
 
-    // Update likes count and likedBy list in Firestore
     FirebaseFirestore.instance.collection('posts').doc(post.id).update({
       'likes': post.likes,
       'likedBy': post.likedBy,
@@ -227,20 +341,11 @@ class _ConnectPageState extends State<ConnectPage> {
         title: Text(
           "Connect",
           style: TextStyle(
-            fontFamily: GoogleFonts.comfortaa().fontFamily,
             fontSize: MediaQuery.of(context).size.height * 0.04,
             color: const Color.fromRGBO(16, 25, 22, 1),
           ),
         ),
         backgroundColor: const Color.fromRGBO(97, 166, 171, 1),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.add),
-            onPressed: () {
-              Navigator.pushNamed(context, CreatePostPage.routeName);
-            },
-          ),
-        ],
       ),
       body: SafeArea(
         child: _loading
@@ -257,13 +362,19 @@ class _ConnectPageState extends State<ConnectPage> {
                   )
                 : RefreshIndicator(
                     onRefresh: _fetchPosts,
-                    child: ListView.builder(
+                    child: ListView.separated(
                       itemCount: _posts.length,
+                      separatorBuilder: (BuildContext context, int index) =>
+                          SizedBox(height: 16),
                       itemBuilder: (BuildContext context, int index) {
-                        return PostCard(
-                          post: _posts[index],
-                          onLike: _handleLike,
-                        );
+                        if (!_posts[index].reported) {
+                          return PostCard(
+                            post: _posts[index],
+                            onLike: _handleLike,
+                          );
+                        } else {
+                          return SizedBox.shrink();
+                        }
                       },
                     ),
                   ),

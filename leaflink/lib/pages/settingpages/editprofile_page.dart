@@ -55,40 +55,89 @@ class EditProfilePage extends StatelessWidget {
                 color: Color.fromRGBO(246, 245, 235, 1),
               ),
             ),
-            StreamBuilder<QuerySnapshot>(
-              stream: FirebaseFirestore.instance
-                  .collection('posts')
-                  .where('email',
-                      isEqualTo: FirebaseAuth.FirebaseAuth.instance.currentUser!
-                          .email) // Filter posts by user's email
-                  .snapshots(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(
-                    child: CircularProgressIndicator(),
-                  );
-                } else if (snapshot.hasError) {
-                  return Center(
-                    child: Text('Error: ${snapshot.error}'),
-                  );
-                } else {
-                  if (snapshot.data!.docs.isEmpty) {
-                    return Column(
-                      children: [
-                        SizedBox(height: 20),
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 10),
-                          child: Text(
-                            FirebaseAuth
-                                .FirebaseAuth.instance.currentUser!.email!,
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
+            Column(
+              children: [
+                StreamBuilder<QuerySnapshot>(
+                  stream: FirebaseFirestore.instance
+                      .collection('events')
+                      .where('userEmail',
+                          isEqualTo: FirebaseAuth
+                              .FirebaseAuth
+                              .instance
+                              .currentUser!
+                              .email) // Filter events by user's email
+                      .snapshots(),
+                  builder: (context, eventSnapshot) {
+                    if (eventSnapshot.connectionState ==
+                        ConnectionState.waiting) {
+                      return CircularProgressIndicator();
+                    } else if (eventSnapshot.hasError) {
+                      return Text('Error: ${eventSnapshot.error}');
+                    } else {
+                      // Display events here
+                      return ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: eventSnapshot.data!.docs.length,
+                        itemBuilder: (ctx, index) {
+                          final eventData = eventSnapshot.data!.docs[index]
+                              .data() as Map<String, dynamic>;
+                          return Card(
+                            margin: EdgeInsets.all(10),
+                            child: ListTile(
+                              title: Text(eventData['title']),
+                              subtitle: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text('Date: ${eventData['date']}'),
+                                  Text('Time: ${eventData['time']}'),
+                                  Text('Venue: ${eventData['venue']}'),
+                                ],
+                              ),
+                              trailing: Card(
+                                color: Colors.red, // Making delete button red
+                                child: IconButton(
+                                  icon: Icon(
+                                    Icons.delete,
+                                    color: Colors.white,
+                                  ),
+                                  onPressed: () {
+                                    _deleteEvent(
+                                        eventSnapshot
+                                            .data!.docs[index].reference,
+                                        context);
+                                  },
+                                ),
+                              ),
                             ),
-                          ),
-                        ),
-                        Expanded(
-                          child: Center(
+                          );
+                        },
+                      );
+                    }
+                  },
+                ),
+                Expanded(
+                  child: StreamBuilder<QuerySnapshot>(
+                    stream: FirebaseFirestore.instance
+                        .collection('posts')
+                        .where('email',
+                            isEqualTo: FirebaseAuth
+                                .FirebaseAuth
+                                .instance
+                                .currentUser!
+                                .email) // Filter posts by user's email
+                        .snapshots(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      } else if (snapshot.hasError) {
+                        return Center(
+                          child: Text('Error: ${snapshot.error}'),
+                        );
+                      } else {
+                        if (snapshot.data!.docs.isEmpty) {
+                          return Center(
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
@@ -106,124 +155,102 @@ class EditProfilePage extends StatelessWidget {
                                 ),
                               ],
                             ),
-                          ),
-                        ),
-                      ],
-                    );
-                  }
-                  return Column(
-                    children: [
-                      Padding(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 10, vertical: 20),
-                        child: Text(
-                          FirebaseAuth
-                              .FirebaseAuth.instance.currentUser!.email!,
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        child: RefreshIndicator(
-                          onRefresh: () async {
-                            // Reload posts
-                          },
-                          child: ListView(
-                            children: snapshot.data!.docs
-                                .map((DocumentSnapshot document) {
-                              Map<String, dynamic> data =
-                                  document.data() as Map<String, dynamic>;
-                              bool isLiked = (data['likedBy'] as List<dynamic>)
-                                  .contains(FirebaseAuth.FirebaseAuth.instance
-                                      .currentUser!.email);
-                              return Column(
-                                children: [
-                                  // Card with image, caption, like, share, and delete options
-                                  Card(
-                                    elevation: 5,
-                                    margin: EdgeInsets.all(10),
-                                    child: Column(
-                                      children: [
-                                        ListTile(
-                                          title: Text(
-                                            data['caption'],
-                                            style: TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                          subtitle: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Image.network(
-                                                data['imageUrl'],
-                                                width: double.infinity,
-                                                height: 200,
-                                                fit: BoxFit.cover,
-                                                errorBuilder: (context, error,
-                                                    stackTrace) {
-                                                  return Icon(Icons.error);
-                                                },
-                                              ),
-                                              SizedBox(height: 8),
-                                              Text(
-                                                "${data['likes']} Likes",
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 16,
-                                                ),
-                                              ),
-                                            ],
+                          );
+                        }
+                        return ListView.builder(
+                          itemCount: snapshot.data!.docs.length,
+                          itemBuilder: (context, index) {
+                            DocumentSnapshot document =
+                                snapshot.data!.docs[index];
+                            Map<String, dynamic> data =
+                                document.data() as Map<String, dynamic>;
+                            bool isLiked = (data['likedBy'] as List<dynamic>)
+                                .contains(FirebaseAuth
+                                    .FirebaseAuth.instance.currentUser!.email);
+                            return Column(
+                              children: [
+                                // Card with image, caption, like, share, and delete options
+                                Card(
+                                  elevation: 5,
+                                  margin: EdgeInsets.all(10),
+                                  child: Column(
+                                    children: [
+                                      ListTile(
+                                        title: Text(
+                                          data['caption'],
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
                                           ),
                                         ),
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceAround,
+                                        subtitle: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
                                           children: [
-                                            IconButton(
-                                              onPressed: () {
-                                                _likePost(document, isLiked);
+                                            Image.network(
+                                              data['imageUrl'],
+                                              width: double.infinity,
+                                              height: 200,
+                                              fit: BoxFit.cover,
+                                              errorBuilder:
+                                                  (context, error, stackTrace) {
+                                                return Icon(Icons.error);
                                               },
-                                              icon: Icon(Icons.favorite),
-                                              color:
-                                                  isLiked ? Colors.red : null,
                                             ),
-                                            IconButton(
-                                              onPressed: () {
-                                                _sharePost(data['caption'],
-                                                    data['imageUrl']);
-                                              },
-                                              icon: Icon(Icons.share),
-                                              color: Colors.blue,
-                                            ),
-                                            IconButton(
-                                              onPressed: () {
-                                                _showDeleteDialog(
-                                                    context, document);
-                                              },
-                                              icon: Icon(
-                                                Icons.delete,
-                                                color: Colors.red,
+                                            SizedBox(height: 8),
+                                            Text(
+                                              "${data['likes']} Likes",
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 16,
                                               ),
                                             ),
                                           ],
                                         ),
-                                      ],
-                                    ),
+                                      ),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceAround,
+                                        children: [
+                                          IconButton(
+                                            onPressed: () {
+                                              _likePost(document, isLiked);
+                                            },
+                                            icon: Icon(Icons.favorite),
+                                            color: isLiked ? Colors.red : null,
+                                          ),
+                                          IconButton(
+                                            onPressed: () {
+                                              _sharePost(data['caption'],
+                                                  data['imageUrl']);
+                                            },
+                                            icon: Icon(Icons.share),
+                                            color: Colors.blue,
+                                          ),
+                                          IconButton(
+                                            onPressed: () {
+                                              _showDeleteDialog(
+                                                  context, document);
+                                            },
+                                            icon: Icon(
+                                              Icons.delete,
+                                              color: Colors.red,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
                                   ),
-                                ],
-                              );
-                            }).toList(),
-                          ),
-                        ),
-                      ),
-                    ],
-                  );
-                }
-              },
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      }
+                    },
+                  ),
+                ),
+              ],
             ),
           ],
         ),
@@ -287,6 +314,36 @@ class EditProfilePage extends StatelessWidget {
     await FlutterShare.share(
       title: 'Check out this post',
       text: '$caption\n$imageUrl',
+    );
+  }
+
+  void _deleteEvent(DocumentReference documentRef, BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Delete Event"),
+          content: Text("Are you sure you want to delete this event?"),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text("Cancel"),
+            ),
+            TextButton(
+              onPressed: () {
+                documentRef.delete();
+                Navigator.of(context).pop();
+              },
+              child: Text(
+                "Delete",
+                style: TextStyle(color: Colors.red),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }
