@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:leaflink/components/my_button.dart';
 import 'package:leaflink/components/my_textfield.dart';
-import 'package:leaflink/components/google_sign_in_button.dart'; // Add this import
+import 'package:leaflink/components/google_sign_in_button.dart';
 import 'package:leaflink/pages/forgotpass_page.dart';
 import 'package:leaflink/pages/home_page.dart';
 
@@ -114,45 +113,51 @@ class LoginPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      key: _scaffoldKey,
-      body: Center(
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            Container(
-              alignment: Alignment.center,
-              color: const Color.fromRGBO(97, 166, 171, 1),
-            ),
-            Container(
-              decoration: BoxDecoration(
-                borderRadius: const BorderRadius.all(
-                  Radius.circular(20),
-                ),
-                color: const Color.fromRGBO(246, 245, 235, 1),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.08),
-                    spreadRadius: 5,
-                    blurRadius: 7,
-                    offset: const Offset(0, 3),
+    return WillPopScope(
+      onWillPop: () async => false,
+      child: Scaffold(
+        key: _scaffoldKey,
+        body: Center(
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              Container(
+                alignment: Alignment.center,
+                color: const Color.fromRGBO(97, 166, 171, 1),
+              ),
+              SingleChildScrollView(
+                child: Container(
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    borderRadius: const BorderRadius.all(
+                      Radius.circular(20),
+                    ),
+                    color: const Color.fromRGBO(246, 245, 235, 1),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.08),
+                        spreadRadius: 5,
+                        blurRadius: 7,
+                        offset: const Offset(0, 3),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-              height: MediaQuery.of(context).size.height * 0.95,
-              width: MediaQuery.of(context).size.width * 0.95,
-            ),
-            SafeArea(
-              child: Positioned(
-                bottom: 0,
-                child: SizedBox(
-                  height: MediaQuery.of(context).size.height * 1,
-                  width: MediaQuery.of(context).size.width,
-                  child: buildLoginForm(context),
+                  height: MediaQuery.of(context).size.height * 0.95,
+                  width: MediaQuery.of(context).size.width * 0.95,
+                  child: SafeArea(
+                    child: Positioned(
+                      bottom: 0,
+                      child: SizedBox(
+                        height: MediaQuery.of(context).size.height * 1,
+                        width: MediaQuery.of(context).size.width,
+                        child: buildLoginForm(context),
+                      ),
+                    ),
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -170,7 +175,6 @@ class LoginPage extends StatelessWidget {
                 style: TextStyle(
                   color: const Color.fromRGBO(16, 25, 22, 1),
                   fontSize: MediaQuery.of(context).size.height * 0.025,
-                  fontFamily: GoogleFonts.comfortaa().fontFamily,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -194,7 +198,6 @@ class LoginPage extends StatelessWidget {
                   textAlign: TextAlign.left,
                   style: TextStyle(
                     color: Color.fromRGBO(66, 123, 138, 1),
-                    fontFamily: GoogleFonts.kohSantepheap().fontFamily,
                     fontSize: MediaQuery.of(context).size.height * 0.018,
                   ),
                 ),
@@ -220,7 +223,6 @@ class LoginPage extends StatelessWidget {
                       'Or continue with',
                       style: TextStyle(
                         color: Color.fromRGBO(16, 25, 22, 1),
-                        fontFamily: GoogleFonts.kohSantepheap().fontFamily,
                         fontSize: MediaQuery.of(context).size.height * 0.02,
                       ),
                     ),
@@ -251,7 +253,6 @@ class LoginPage extends StatelessWidget {
                 Text(
                   "Not a member? ",
                   style: TextStyle(
-                    fontFamily: GoogleFonts.kohSantepheap().fontFamily,
                     fontSize: MediaQuery.of(context).size.height * 0.02,
                     color: Color.fromRGBO(16, 25, 22, 1),
                   ),
@@ -261,10 +262,9 @@ class LoginPage extends StatelessWidget {
                   child: Text(
                     'Register now',
                     style: TextStyle(
-                      color: const Color.fromRGBO(57, 80, 92, 1),
+                      color: const Color.fromRGBO(97, 166, 171, 1),
                       fontSize: MediaQuery.of(context).size.height * 0.02,
                       fontWeight: FontWeight.bold,
-                      fontFamily: GoogleFonts.kohSantepheap().fontFamily,
                     ),
                   ),
                 ),
