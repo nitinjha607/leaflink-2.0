@@ -6,7 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:leaflink/solutionpage.dart';
-import 'package:webview_flutter/webview_flutter.dart';
+import 'package:leaflink/pages/loader_page.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:leaflink/pages/connect_page.dart';
 import 'package:leaflink/pages/eventscalendar_page.dart';
@@ -81,19 +81,23 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-//function for camera redirect
+  // Function to capture image and redirect to SolutionPage
   Future<void> captureImageAndRedirect() async {
     final pickedFile = await _picker.pickImage(source: ImageSource.camera);
 
     if (pickedFile != null) {
       capturedImage = File(pickedFile.path);
 
+      Navigator.pushNamed(context, LoaderPage.routeName);
       // Upload the captured image to Firebase Storage
       final imageUrl = await uploadImageToFirebase(capturedImage!);
 
-      // Navigate to the SolutionPage and pass the image URL as a parameter
+      Navigator.pop(context);
+
       Navigator.pushNamed(context, SolutionPage.routeName, arguments: imageUrl);
     } else {
+      // Dismiss the blank scaffold if no image is selected
+
       print('No image selected.');
     }
   }
@@ -516,129 +520,149 @@ class _HomePageState extends State<HomePage> {
           child: Stack(
             children: [
               Container(
-                  alignment: Alignment.center,
-                  height: MediaQuery.of(context).size.height,
-                  width: MediaQuery.of(context).size.width,
-                  decoration: const BoxDecoration(
-                    color: Color.fromRGBO(246, 245, 235, 1),
-                  )),
-              Container(
-                  alignment: Alignment.center,
-                  child: Container(
-                    margin: const EdgeInsets.all(15),
-                    height: MediaQuery.of(context).size.height,
-                    width: MediaQuery.of(context).size.width,
-                    decoration: const BoxDecoration(
-                      borderRadius: BorderRadius.all(Radius.circular(10)),
-                      color: Color.fromRGBO(204, 221, 221, 1),
-                    ),
-                  )),
-
-              //searchbar
-              Positioned(
-                top: MediaQuery.of(context).size.height * 0.3,
-                right: MediaQuery.of(context).size.width * 0.06,
-                child: Text(
-                  "WATCH YOUR ACTIONS GROW!",
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: MediaQuery.sizeOf(context).height * 0.022,
-                    color: const Color.fromRGBO(16, 25, 22, 1),
-                    fontFamily: GoogleFonts.comfortaa().fontFamily,
-                  ),
-                ),
+                alignment: Alignment.center,
+                height: MediaQuery.of(context).size.height,
+                width: MediaQuery.of(context).size.width,
+                color: Color.fromRGBO(246, 245, 235, 1),
               ),
-              Positioned(
-                top: MediaQuery.of(context).size.height * 0.35,
-                right: MediaQuery.of(context).size.width * 0.05,
-                child: SizedBox(
-                  width: MediaQuery.of(context).size.width * 0.85,
-                  child: Text(
-                      " See how many trees you've saved and carbon you've cut",
-                      textAlign: TextAlign.right,
-                      style: TextStyle(
-                        fontSize: MediaQuery.sizeOf(context).height * 0.02,
-                        color: const Color.fromRGBO(16, 25, 22, 1),
-                        fontFamily: GoogleFonts.kohSantepheap().fontFamily,
-                      )),
-                ),
-              ),
-              Positioned(
-                top: MediaQuery.of(context).size.height * 0.4,
-                right: MediaQuery.of(context).size.width * -0.02,
+              SingleChildScrollView(
                 child: Container(
+                  margin: EdgeInsets.all(15),
+                  alignment: Alignment.center,
+                  padding: const EdgeInsets.all(15),
                   decoration: const BoxDecoration(
-                    borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(5),
-                        bottomLeft: Radius.circular(5)),
-                    color: Color.fromRGBO(246, 245, 235, 1),
+                    borderRadius: BorderRadius.all(Radius.circular(10)),
+                    color: Color.fromRGBO(204, 221, 221, 1),
                   ),
-                  width: MediaQuery.of(context).size.width * 0.9,
-                  height: MediaQuery.of(context).size.height * 0.35,
-                  child: ChartContainer(
-                    title: '',
-                    color: const Color.fromRGBO(246, 245, 235, 1),
-                    chart: const BarChartContent(),
-                    currentMonthValue: monthName(currentMonth),
-                  ),
-                ),
-              ),
-
-              //graphical data
-              Positioned(
-                top: MediaQuery.of(context).size.height * 0.05,
-                left: MediaQuery.of(context).size.width * 0.06,
-                child: Text(
-                  "SNAP. SCAN. SAVE THE PLANET!",
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: MediaQuery.sizeOf(context).height * 0.022,
-                    color: const Color.fromRGBO(16, 25, 22, 1),
-                    fontFamily: GoogleFonts.comfortaa().fontFamily,
-                  ),
-                ),
-              ),
-              Positioned(
-                top: MediaQuery.of(context).size.height * 0.1,
-                left: MediaQuery.of(context).size.width * 0.055,
-                child: SizedBox(
-                  width: MediaQuery.of(context).size.width * 0.85,
-                  child: Text(
-                      "What can we help you reduce, reuse, or recycle today?",
-                      style: TextStyle(
-                        fontSize: MediaQuery.sizeOf(context).height * 0.02,
-                        color: const Color.fromRGBO(16, 25, 22, 1),
-                        fontFamily: GoogleFonts.kohSantepheap().fontFamily,
-                      )),
-                ),
-              ),
-              Positioned(
-                top: MediaQuery.of(context).size.height * 0.15,
-                left: MediaQuery.of(context).size.width * -0.02,
-                child: Container(
-                    padding: EdgeInsets.all(
-                      MediaQuery.of(context).size.height * 0.009,
-                    ),
-                    child: Container(
-                      margin: const EdgeInsets.all(15),
-                      width: MediaQuery.of(context).size.width * 0.7,
-                      height: MediaQuery.of(context).size.height * 0.07,
-                      decoration: const BoxDecoration(
-                        color: Color.fromRGBO(246, 245, 235, 1),
-                        borderRadius: BorderRadius.all(Radius.circular(3)),
-                      ),
-                      child: IconButton(
-                        icon: Icon(
-                          Icons.camera_alt,
-                          color: const Color.fromRGBO(57, 80, 92, 1),
-                          size: MediaQuery.sizeOf(context).height * 0.035,
+                  child: Column(children: [
+                    const SizedBox(height: 30),
+                    Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "SNAP. SCAN. SAVE THE PLANET!",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize:
+                                  MediaQuery.of(context).size.height * 0.022,
+                              color: const Color.fromRGBO(16, 25, 22, 1),
+                              fontFamily: GoogleFonts.comfortaa().fontFamily,
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width * 0.85,
+                            child: Text(
+                              "What can we help you reduce, reuse, or recycle today?",
+                              textAlign: TextAlign.left,
+                              style: TextStyle(
+                                fontSize:
+                                    MediaQuery.of(context).size.height * 0.02,
+                                color: const Color.fromRGBO(16, 25, 22, 1),
+                                fontFamily:
+                                    GoogleFonts.kohSantepheap().fontFamily,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                          Container(
+                            width: MediaQuery.of(context).size.width * 0.7,
+                            height: MediaQuery.of(context).size.height * 0.07,
+                            decoration: BoxDecoration(
+                              color: Color.fromRGBO(246, 245, 235, 1),
+                              borderRadius: BorderRadius.circular(3),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Padding(
+                                  padding: EdgeInsets.symmetric(horizontal: 25),
+                                  child: Text(
+                                    'Scan Here',
+                                    style: TextStyle(
+                                      fontSize:
+                                          MediaQuery.of(context).size.height *
+                                              0.03,
+                                      color:
+                                          const Color.fromRGBO(16, 25, 22, 1),
+                                      fontFamily:
+                                          GoogleFonts.comfortaa().fontFamily,
+                                    ),
+                                  ),
+                                ),
+                                ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor:
+                                        const Color.fromRGBO(246, 245, 235, 1),
+                                    foregroundColor:
+                                        const Color.fromRGBO(57, 80, 92, 1),
+                                  ),
+                                  onPressed: () {
+                                    captureImageAndRedirect();
+                                  },
+                                  child: Icon(
+                                    Icons.camera_alt,
+                                    size: MediaQuery.of(context).size.height *
+                                        0.035,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ]),
+                    SizedBox(height: 50),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        // Add space between sections
+                        Text(
+                          "WATCH YOUR ACTIONS GROW!",
+                          textAlign: TextAlign.right,
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize:
+                                MediaQuery.of(context).size.height * 0.022,
+                            color: const Color.fromRGBO(16, 25, 22, 1),
+                            fontFamily: GoogleFonts.comfortaa().fontFamily,
+                          ),
                         ),
-                        onPressed: () {
-                          captureImageAndRedirect();
-                        },
-                      ),
-                    )),
-              )
+                        SizedBox(height: 10),
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.85,
+                          child: Text(
+                            "See how many trees you've saved and carbon you've cut",
+                            textAlign: TextAlign.right,
+                            style: TextStyle(
+                              fontSize:
+                                  MediaQuery.of(context).size.height * 0.02,
+                              color: const Color.fromRGBO(16, 25, 22, 1),
+                              fontFamily:
+                                  GoogleFonts.kohSantepheap().fontFamily,
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 20),
+                        Container(
+                          width: MediaQuery.of(context).size.width * 0.82,
+                          height: MediaQuery.of(context).size.height * 0.35,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(5),
+                            color: Color.fromRGBO(246, 245, 235, 1),
+                          ),
+                          child: ChartContainer(
+                            title: '',
+                            color: Color.fromRGBO(246, 245, 235, 1),
+                            chart: BarChartContent(),
+                            currentMonthValue: monthName(currentMonth),
+                          ),
+                        ),
+
+                        SizedBox(height: 25),
+                      ],
+                    ),
+                  ]),
+                ),
+              ),
             ],
           ),
         ),
