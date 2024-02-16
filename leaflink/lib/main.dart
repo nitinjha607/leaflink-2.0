@@ -15,11 +15,12 @@ import 'package:leaflink/pages/eventmanagement_page.dart';
 import 'package:leaflink/pages/Create_Post_Page.dart';
 import 'package:leaflink/pages/added_events.dart';
 import 'package:leaflink/solutionpage.dart';
+import 'package:leaflink/pages/loader_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
-    options: FirebaseOptions(
+    options: const FirebaseOptions(
       apiKey: 'AIzaSyBzLPGrr3V11mHhIVFk_friu47oR5LBsSs',
       authDomain: 'leaf-link-1e912-default-rtdb.firebaseio.com',
       projectId: 'leaf-link-1e912',
@@ -58,6 +59,7 @@ class MyApp extends StatelessWidget {
             const CreatePostPage(),
         AddedEventsPage.routeName: (BuildContext context) => AddedEventsPage(),
         SolutionPage.routeName: (BuildContext context) => SolutionPage(),
+        LoaderPage.routeName: (BuildContext context) => LoaderPage(),
       },
     );
   }
