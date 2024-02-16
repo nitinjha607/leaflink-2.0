@@ -96,87 +96,91 @@ class RegisterPage extends StatelessWidget {
             alignment: Alignment.center,
             color: const Color.fromRGBO(97, 166, 171, 1),
           ),
-          Container(
-            decoration: BoxDecoration(
-              borderRadius: const BorderRadius.all(
-                Radius.circular(20),
-              ),
-              color: const Color.fromRGBO(246, 245, 235, 1),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.08),
-                  spreadRadius: 5,
-                  blurRadius: 7,
-                  offset: const Offset(0, 3),
+          SingleChildScrollView(
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: const BorderRadius.all(
+                  Radius.circular(20),
                 ),
-              ],
-            ),
-            height: MediaQuery.of(context).size.height * 0.95,
-            width: MediaQuery.of(context).size.width * 0.95,
-          ),
-          Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(top: 70.0, bottom: 10),
-                child: Text(
-                  'Welcome to Leaflink!',
-                  style: TextStyle(
-                    color: const Color.fromRGBO(16, 25, 22, 1),
-                    fontSize: MediaQuery.of(context).size.height * 0.025,
-                    fontFamily: GoogleFonts.comfortaa().fontFamily,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-              MyTextField(
-                controller: emailController,
-                hintText: 'Email',
-                obscureText: false,
-              ),
-              MyTextField(
-                controller: usernameController,
-                hintText: 'Username',
-                obscureText: false,
-              ),
-              MyTextField(
-                controller: passwordController,
-                hintText: 'Password',
-                obscureText: true,
-              ),
-              MyTextField(
-                controller: confirmPasController,
-                hintText: 'Re-enter Password',
-                obscureText: true,
-              ),
-              MyButton(
-                onTap: () => registerUser(context),
-                text: 'Register',
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    "Already a member? ",
-                    style: TextStyle(
-                      fontFamily: GoogleFonts.kohSantepheap().fontFamily,
-                      fontSize: MediaQuery.of(context).size.height * 0.02,
-                      color: Color.fromRGBO(16, 25, 22, 1),
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: onTap,
-                    child: Text(
-                      'Login here',
-                      style: TextStyle(
-                          color: const Color.fromRGBO(57, 80, 92, 1),
-                          fontSize: MediaQuery.of(context).size.height * 0.02,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: GoogleFonts.kohSantepheap().fontFamily),
-                    ),
+                color: const Color.fromRGBO(246, 245, 235, 1),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.08),
+                    spreadRadius: 5,
+                    blurRadius: 7,
+                    offset: const Offset(0, 3),
                   ),
                 ],
-              )
-            ],
+              ),
+              height: MediaQuery.of(context).size.height * 0.95,
+              width: MediaQuery.of(context).size.width * 0.95,
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(top: 70.0, bottom: 10),
+                    child: Text(
+                      'Welcome to Leaflink!',
+                      style: TextStyle(
+                        color: const Color.fromRGBO(16, 25, 22, 1),
+                        fontSize: MediaQuery.of(context).size.height * 0.025,
+                        fontFamily: GoogleFonts.comfortaa().fontFamily,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  MyTextField(
+                    controller: emailController,
+                    hintText: 'Email',
+                    obscureText: false,
+                  ),
+                  MyTextField(
+                    controller: usernameController,
+                    hintText: 'Username',
+                    obscureText: false,
+                  ),
+                  MyTextField(
+                    controller: passwordController,
+                    hintText: 'Password',
+                    obscureText: true,
+                  ),
+                  MyTextField(
+                    controller: confirmPasController,
+                    hintText: 'Re-enter Password',
+                    obscureText: true,
+                  ),
+                  MyButton(
+                    onTap: () => registerUser(context),
+                    text: 'Register',
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "Already a member? ",
+                        style: TextStyle(
+                          fontFamily: GoogleFonts.kohSantepheap().fontFamily,
+                          fontSize: MediaQuery.of(context).size.height * 0.02,
+                          color: Color.fromRGBO(16, 25, 22, 1),
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: onTap,
+                        child: Text(
+                          'Login here',
+                          style: TextStyle(
+                              color: const Color.fromRGBO(97, 166, 171, 1),
+                              fontSize:
+                                  MediaQuery.of(context).size.height * 0.02,
+                              fontWeight: FontWeight.bold,
+                              fontFamily:
+                                  GoogleFonts.kohSantepheap().fontFamily),
+                        ),
+                      ),
+                    ],
+                  )
+                ],
+              ),
+            ),
           ),
         ],
       ),
