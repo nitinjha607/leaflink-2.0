@@ -19,6 +19,14 @@ class _CreatePostPageState extends State<CreatePostPage> {
   final _imagePicker = ImagePicker();
   File? _image;
   bool isLoading = false;
+  late String? _userId; // Variable to hold the user's UID
+
+  @override
+  void initState() {
+    super.initState();
+    // Get the current user's UID when the widget initializes
+    _userId = FirebaseAuth.instance.currentUser?.uid;
+  }
 
   Future<void> _selectImage() async {
     final pickedFile =
@@ -47,6 +55,12 @@ class _CreatePostPageState extends State<CreatePostPage> {
       // Get download URL
       final String downloadURL = await ref.getDownloadURL();
       final String userEmail = FirebaseAuth.instance.currentUser!.email!;
+      int currentWeek = ((DateTime.now()
+                  .difference(
+                      DateTime(DateTime.now().year, DateTime.now().month, 1))
+                  .inDays) /
+              7)
+          .ceil();
 
       // Save post to Firestore
       await FirebaseFirestore.instance.collection('posts').add({
@@ -57,6 +71,42 @@ class _CreatePostPageState extends State<CreatePostPage> {
         'likes': 0,
         'likedBy': [],
       });
+
+      // Initialize graphdata if not exist for the user
+      if (_userId != null) {
+        final graphDataRef =
+            FirebaseFirestore.instance.collection('graphdata').doc(_userId!);
+        graphDataRef.get().then((docSnapshot) {
+          if (!docSnapshot.exists) {
+            // Initialize week data for a new user
+            Map<String, dynamic> initData = {
+              'email': userEmail,
+              'week1': 0,
+              'week2': 0,
+              'week3': 0,
+              'week4': 0,
+              'week5': 0,
+              'total': 0,
+            };
+            graphDataRef.set(initData);
+          }
+          // Increment the current week's value in graphdata
+          graphDataRef.update({
+            'week$currentWeek': FieldValue.increment(1),
+          }).then((_) {
+            // Update total field
+            graphDataRef.get().then((docSnapshot) {
+              if (docSnapshot.exists) {
+                num total = 0;
+                for (int i = 1; i <= 5; i++) {
+                  total += (docSnapshot.data()!['week$i'] ?? 0) as num;
+                }
+                graphDataRef.update({'total': total.toInt()});
+              }
+            });
+          });
+        });
+      }
 
       // Hide loading indicator
       setState(() {
