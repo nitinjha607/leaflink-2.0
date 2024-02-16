@@ -1,95 +1,124 @@
-import 'package:google_fonts/google_fonts.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 class BarChartContent extends StatelessWidget {
-  const BarChartContent({super.key});
+  const BarChartContent({Key? key});
 
   @override
   Widget build(BuildContext context) {
-    return BarChart(
-      BarChartData(
-        maxY: 7.5,
-        barGroups: barChartGroupData,
-        gridData: const FlGridData(show: false),
-        titlesData: const FlTitlesData(
-          show: true,
-          bottomTitles: AxisTitles(
-            sideTitles: SideTitles(
-              showTitles: true,
-              reservedSize: 35,
-              getTitlesWidget: getTitles,
-            ),
-          ),
-          leftTitles: AxisTitles(
-            sideTitles: SideTitles(
-              showTitles: false,
-            ),
-          ),
-          topTitles: AxisTitles(
-            sideTitles: SideTitles(
-              showTitles: false,
-            ),
-          ),
-          rightTitles: AxisTitles(
-            sideTitles: SideTitles(
-              showTitles: false,
-            ),
-          ),
-        ),
-        borderData: FlBorderData(
-          show: true,
-          border: const Border(
-            top: BorderSide.none,
-            right: BorderSide.none,
-            bottom: BorderSide.none,
-            left: BorderSide.none,
-          ),
-        ),
-      ),
+    final currentUserEmail = FirebaseAuth.instance.currentUser!.email;
+
+    return FutureBuilder(
+      future: Firebase.initializeApp(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        }
+        if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        }
+        return StreamBuilder<QuerySnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection("graphdata")
+              .where('email', isEqualTo: currentUserEmail)
+              .snapshots(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(child: CircularProgressIndicator());
+            }
+            if (snapshot.hasError) {
+              return Center(child: Text('Error: ${snapshot.error}'));
+            }
+
+            // Check if no documents are retrieved
+            if (snapshot.data!.docs.isEmpty) {
+              return Center(child: Text('No data available'));
+            }
+
+            // Convert the documents into a list of week data
+            List<int> weekDataList = [];
+            snapshot.data!.docs.forEach((doc) {
+              weekDataList.add(doc['week1']);
+              weekDataList.add(doc['week2']);
+              weekDataList.add(doc['week3']);
+              weekDataList.add(doc['week4']);
+              weekDataList.add(doc['week5']);
+            });
+
+            // Convert week data list to BarChartGroupData
+            List<BarChartGroupData> barChartGroupData = [];
+            int maxBarIndex = 0;
+            double maxBarValue = weekDataList[0].toDouble();
+            for (int i = 0; i < weekDataList.length; i++) {
+              if (weekDataList[i] > maxBarValue) {
+                maxBarValue = weekDataList[i].toDouble();
+                maxBarIndex = i;
+              }
+              barChartGroupData.add(BarChartGroupData(
+                x: i + 1,
+                barRods: [
+                  BarChartRodData(
+                    toY: weekDataList[i].toDouble(), // Use week data as y value
+                    color: i == maxBarIndex
+                        ? const Color.fromRGBO(
+                            144, 175, 175, 1) // Different color for max value
+                        : const Color.fromRGBO(57, 80, 92, 1),
+                    width: 25,
+                  ),
+                ],
+              ));
+            }
+
+            return BarChart(
+              BarChartData(
+                maxY: 5,
+                barGroups: barChartGroupData,
+                gridData: const FlGridData(show: false),
+                titlesData: const FlTitlesData(
+                  show: true,
+                  bottomTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                      reservedSize: 35,
+                      getTitlesWidget: getTitles,
+                    ),
+                  ),
+                  leftTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: false,
+                    ),
+                  ),
+                  topTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: false,
+                    ),
+                  ),
+                  rightTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: false,
+                    ),
+                  ),
+                ),
+                borderData: FlBorderData(
+                  show: true,
+                  border: const Border(
+                    top: BorderSide.none,
+                    right: BorderSide.none,
+                    bottom: BorderSide.none,
+                    left: BorderSide.none,
+                  ),
+                ),
+              ),
+            );
+          },
+        );
+      },
     );
   }
 }
-
-//random static data for now
-List<BarChartGroupData> barChartGroupData = [
-  BarChartGroupData(x: 1, barRods: [
-    BarChartRodData(
-      toY: 10,
-      color: const Color.fromRGBO(57, 80, 92, 1),
-      width: 30,
-    ),
-  ]),
-  BarChartGroupData(x: 2, barRods: [
-    BarChartRodData(
-      toY: 13.5,
-      color: const Color.fromRGBO(144, 175, 175, 1),
-      width: 30,
-    ),
-  ]),
-  BarChartGroupData(x: 3, barRods: [
-    BarChartRodData(
-      toY: 12.6,
-      color: const Color.fromRGBO(57, 80, 92, 1),
-      width: 30,
-    ),
-  ]),
-  BarChartGroupData(x: 4, barRods: [
-    BarChartRodData(
-      toY: 11.4,
-      color: const Color.fromRGBO(57, 80, 92, 1),
-      width: 30,
-    ),
-  ]),
-  BarChartGroupData(x: 5, barRods: [
-    BarChartRodData(
-      toY: 7.5,
-      color: const Color.fromRGBO(57, 80, 92, 1),
-      width: 30,
-    ),
-  ]),
-];
 
 Widget getTitles(double value, TitleMeta meta) {
   Widget text;
@@ -100,7 +129,6 @@ Widget getTitles(double value, TitleMeta meta) {
         style: TextStyle(
           fontSize: 10,
           color: const Color.fromRGBO(16, 25, 22, 1),
-          fontFamily: GoogleFonts.kohSantepheap().fontFamily,
         ),
       );
       break;
@@ -110,7 +138,6 @@ Widget getTitles(double value, TitleMeta meta) {
         style: TextStyle(
           fontSize: 10,
           color: const Color.fromRGBO(16, 25, 22, 1),
-          fontFamily: GoogleFonts.kohSantepheap().fontFamily,
         ),
       );
       break;
@@ -120,7 +147,6 @@ Widget getTitles(double value, TitleMeta meta) {
         style: TextStyle(
           fontSize: 10,
           color: const Color.fromRGBO(16, 25, 22, 1),
-          fontFamily: GoogleFonts.kohSantepheap().fontFamily,
         ),
       );
       break;
@@ -130,7 +156,6 @@ Widget getTitles(double value, TitleMeta meta) {
         style: TextStyle(
           fontSize: 10,
           color: const Color.fromRGBO(16, 25, 22, 1),
-          fontFamily: GoogleFonts.kohSantepheap().fontFamily,
         ),
       );
       break;
@@ -140,18 +165,15 @@ Widget getTitles(double value, TitleMeta meta) {
         style: TextStyle(
           fontSize: 10,
           color: const Color.fromRGBO(16, 25, 22, 1),
-          fontFamily: GoogleFonts.kohSantepheap().fontFamily,
         ),
       );
       break;
-
     default:
       text = const Text('');
       break;
   }
   return SideTitleWidget(
     axisSide: meta.axisSide,
-    space: 16,
     child: text,
   );
 }
