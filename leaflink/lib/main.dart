@@ -47,8 +47,7 @@ class MyApp extends StatelessWidget {
         CalendarPage.routeName: (BuildContext context) => const CalendarPage(),
         LeaderboardPage.routeName: (BuildContext context) =>
             const LeaderboardPage(),
-        EditProfilePage.routeName: (BuildContext context) =>
-            const EditProfilePage(),
+        EditProfilePage.routeName: (BuildContext context) => EditProfilePage(),
         HelpPage.routeName: (BuildContext context) => const HelpPage(),
         NotificationPage.routeName: (BuildContext context) =>
             NotificationPage(),

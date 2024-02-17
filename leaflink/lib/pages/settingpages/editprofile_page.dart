@@ -8,8 +8,11 @@ import 'package:flutter/cupertino.dart';
 
 class EditProfilePage extends StatelessWidget {
   static const String routeName = 'edit_profile_page';
+  EditProfilePage({Key? key});
 
-  const EditProfilePage({Key? key});
+  // Add userEmail variable
+  final String? userEmail =
+      FirebaseAuth.FirebaseAuth.instance.currentUser!.email;
 
   void back(BuildContext context) {
     Navigator.of(context).pop();
@@ -46,211 +49,232 @@ class EditProfilePage extends StatelessWidget {
         ],
       ),
       body: SafeArea(
-        child: Container(
-          alignment: Alignment.center,
-          height: MediaQuery.of(context).size.height,
-          width: MediaQuery.of(context).size.width,
-          color: Color.fromRGBO(246, 245, 235, 1),
-          child: Container(
-            margin: const EdgeInsets.all(15),
-            width: MediaQuery.of(context).size.width,
-            decoration: const BoxDecoration(
-              borderRadius: BorderRadius.all(Radius.circular(10)),
-              color: Color.fromRGBO(204, 221, 221, 1),
-            ),
-            child: Column(
-              children: [
-                StreamBuilder<QuerySnapshot>(
-                  stream: FirebaseFirestore.instance
-                      .collection('events')
-                      .where('userEmail',
-                          isEqualTo: FirebaseAuth
-                              .FirebaseAuth.instance.currentUser!.email)
-                      .snapshots(),
-                  builder: (context, eventSnapshot) {
-                    if (eventSnapshot.connectionState ==
-                        ConnectionState.waiting) {
-                      return CircularProgressIndicator();
-                    } else if (eventSnapshot.hasError) {
-                      return Text('Error: ${eventSnapshot.error}');
-                    } else {
-                      return ListView.builder(
-                        shrinkWrap: true,
-                        itemCount: eventSnapshot.data!.docs.length,
-                        itemBuilder: (ctx, index) {
-                          final eventData = eventSnapshot.data!.docs[index]
-                              .data() as Map<String, dynamic>;
-                          return Card(
-                            color: Color.fromRGBO(246, 245, 235, 1),
-                            margin: EdgeInsets.all(10),
-                            child: ListTile(
-                              title: Text(eventData['title']),
-                              subtitle: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text('Date: ${eventData['date']}'),
-                                  Text('Time: ${eventData['time']}'),
-                                  Text('Venue: ${eventData['venue']}'),
-                                ],
-                              ),
-                              trailing: Card(
-                                color: const Color.fromRGBO(97, 166, 171, 1),
-                                child: IconButton(
-                                  icon: Icon(
-                                    CupertinoIcons.delete_solid,
-                                    color: Color.fromRGBO(16, 25, 22, 1),
-                                  ),
-                                  onPressed: () {
-                                    _deleteEvent(
-                                        eventSnapshot
-                                            .data!.docs[index].reference,
-                                        context);
-                                  },
-                                ),
-                              ),
-                            ),
-                          );
-                        },
-                      );
-                    }
-                  },
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                'User Email: $userEmail',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
                 ),
-                Expanded(
-                  child: StreamBuilder<QuerySnapshot>(
-                    stream: FirebaseFirestore.instance
-                        .collection('posts')
-                        .where('email',
-                            isEqualTo: FirebaseAuth
-                                .FirebaseAuth.instance.currentUser!.email)
-                        .snapshots(),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return Center(
-                          child: CircularProgressIndicator(),
-                        );
-                      } else if (snapshot.hasError) {
-                        return Center(
-                          child: Text('Error: ${snapshot.error}'),
-                        );
-                      } else {
-                        if (snapshot.data!.docs.isEmpty) {
-                          return Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  "No posts found",
-                                  style: TextStyle(fontSize: 18),
-                                ),
-                                ElevatedButton(
-                                  onPressed: () {
-                                    Navigator.pushNamed(
-                                        context, CreatePostPage.routeName);
-                                  },
-                                  child: Text("Create your first post"),
-                                ),
-                              ],
-                            ),
-                          );
-                        }
-                        return ListView.builder(
-                          itemCount: snapshot.data!.docs.length,
-                          itemBuilder: (context, index) {
-                            DocumentSnapshot document =
-                                snapshot.data!.docs[index];
-                            Map<String, dynamic> data =
-                                document.data() as Map<String, dynamic>;
-                            bool isLiked = (data['likedBy'] as List<dynamic>)
-                                .contains(FirebaseAuth
-                                    .FirebaseAuth.instance.currentUser!.email);
-                            return Column(
-                              children: [
-                                Card(
+              ),
+            ),
+            Expanded(
+              child: Container(
+                alignment: Alignment.center,
+                height: MediaQuery.of(context).size.height,
+                width: MediaQuery.of(context).size.width,
+                color: Color.fromRGBO(246, 245, 235, 1),
+                child: Container(
+                  margin: const EdgeInsets.all(15),
+                  width: MediaQuery.of(context).size.width,
+                  decoration: const BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(10)),
+                    color: Color.fromRGBO(204, 221, 221, 1),
+                  ),
+                  child: Column(
+                    children: [
+                      StreamBuilder<QuerySnapshot>(
+                        stream: FirebaseFirestore.instance
+                            .collection('events')
+                            .where('userEmail', isEqualTo: userEmail)
+                            .snapshots(),
+                        builder: (context, eventSnapshot) {
+                          if (eventSnapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return CircularProgressIndicator();
+                          } else if (eventSnapshot.hasError) {
+                            return Text('Error: ${eventSnapshot.error}');
+                          } else {
+                            return ListView.builder(
+                              shrinkWrap: true,
+                              itemCount: eventSnapshot.data!.docs.length,
+                              itemBuilder: (ctx, index) {
+                                final eventData =
+                                    eventSnapshot.data!.docs[index].data()
+                                        as Map<String, dynamic>;
+                                return Card(
                                   color: Color.fromRGBO(246, 245, 235, 1),
-                                  elevation: 0,
                                   margin: EdgeInsets.all(10),
-                                  child: Column(
-                                    children: [
-                                      ListTile(
-                                        title: Text(
-                                          data['caption'],
-                                          style: TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold,
-                                          ),
+                                  child: ListTile(
+                                    title: Text(eventData['title']),
+                                    subtitle: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text('Date: ${eventData['date']}'),
+                                        Text('Time: ${eventData['time']}'),
+                                        Text('Venue: ${eventData['venue']}'),
+                                      ],
+                                    ),
+                                    trailing: Card(
+                                      color:
+                                          const Color.fromRGBO(97, 166, 171, 1),
+                                      child: IconButton(
+                                        icon: Icon(
+                                          CupertinoIcons.delete_solid,
+                                          color: Color.fromRGBO(16, 25, 22, 1),
                                         ),
-                                        subtitle: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
+                                        onPressed: () {
+                                          _deleteEvent(
+                                              eventSnapshot
+                                                  .data!.docs[index].reference,
+                                              context);
+                                        },
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
+                            );
+                          }
+                        },
+                      ),
+                      Expanded(
+                        child: StreamBuilder<QuerySnapshot>(
+                          stream: FirebaseFirestore.instance
+                              .collection('posts')
+                              .where('email', isEqualTo: userEmail)
+                              .snapshots(),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            } else if (snapshot.hasError) {
+                              return Center(
+                                child: Text('Error: ${snapshot.error}'),
+                              );
+                            } else {
+                              if (snapshot.data!.docs.isEmpty) {
+                                return Center(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        "No posts found",
+                                        style: TextStyle(fontSize: 18),
+                                      ),
+                                      ElevatedButton(
+                                        onPressed: () {
+                                          Navigator.pushNamed(context,
+                                              CreatePostPage.routeName);
+                                        },
+                                        child: Text("Create your first post"),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              }
+                              return ListView.builder(
+                                itemCount: snapshot.data!.docs.length,
+                                itemBuilder: (context, index) {
+                                  DocumentSnapshot document =
+                                      snapshot.data!.docs[index];
+                                  Map<String, dynamic> data =
+                                      document.data() as Map<String, dynamic>;
+                                  bool isLiked =
+                                      (data['likedBy'] as List<dynamic>)
+                                          .contains(userEmail);
+                                  return Column(
+                                    children: [
+                                      Card(
+                                        color: Color.fromRGBO(246, 245, 235, 1),
+                                        elevation: 0,
+                                        margin: EdgeInsets.all(10),
+                                        child: Column(
                                           children: [
-                                            Image.network(
-                                              data['imageUrl'],
-                                              width: double.infinity,
-                                              height: 200,
-                                              fit: BoxFit.cover,
-                                              errorBuilder:
-                                                  (context, error, stackTrace) {
-                                                return Icon(Icons.error);
-                                              },
-                                            ),
-                                            SizedBox(height: 8),
-                                            Text(
-                                              "${data['likes']} Likes",
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 16,
+                                            ListTile(
+                                              title: Text(
+                                                data['caption'],
+                                                style: TextStyle(
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
                                               ),
+                                              subtitle: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Image.network(
+                                                    data['imageUrl'],
+                                                    width: double.infinity,
+                                                    height: 200,
+                                                    fit: BoxFit.cover,
+                                                    errorBuilder: (context,
+                                                        error, stackTrace) {
+                                                      return Icon(Icons.error);
+                                                    },
+                                                  ),
+                                                  SizedBox(height: 8),
+                                                  Text(
+                                                    "${data['likes']} Likes",
+                                                    style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      fontSize: 16,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.spaceAround,
+                                              children: [
+                                                IconButton(
+                                                  onPressed: () {
+                                                    _likePost(
+                                                        document, isLiked);
+                                                  },
+                                                  icon: Icon(Icons.favorite),
+                                                  color: isLiked
+                                                      ? Colors.red
+                                                      : null,
+                                                ),
+                                                IconButton(
+                                                  onPressed: () {
+                                                    _sharePost(data['caption'],
+                                                        data['imageUrl']);
+                                                  },
+                                                  icon: Icon(Icons.share),
+                                                  color: const Color.fromRGBO(
+                                                      97, 166, 171, 1),
+                                                ),
+                                                IconButton(
+                                                  onPressed: () {
+                                                    _showDeleteDialog(
+                                                        context, document);
+                                                  },
+                                                  icon: Icon(
+                                                    CupertinoIcons.delete_solid,
+                                                    color: Color.fromRGBO(
+                                                        16, 25, 22, 1),
+                                                  ),
+                                                ),
+                                              ],
                                             ),
                                           ],
                                         ),
                                       ),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceAround,
-                                        children: [
-                                          IconButton(
-                                            onPressed: () {
-                                              _likePost(document, isLiked);
-                                            },
-                                            icon: Icon(Icons.favorite),
-                                            color: isLiked ? Colors.red : null,
-                                          ),
-                                          IconButton(
-                                            onPressed: () {
-                                              _sharePost(data['caption'],
-                                                  data['imageUrl']);
-                                            },
-                                            icon: Icon(Icons.share),
-                                            color: const Color.fromRGBO(
-                                                97, 166, 171, 1),
-                                          ),
-                                          IconButton(
-                                            onPressed: () {
-                                              _showDeleteDialog(
-                                                  context, document);
-                                            },
-                                            icon: Icon(
-                                              CupertinoIcons.delete_solid,
-                                              color:
-                                                  Color.fromRGBO(16, 25, 22, 1),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
                                     ],
-                                  ),
-                                ),
-                              ],
-                            );
+                                  );
+                                },
+                              );
+                            }
                           },
-                        );
-                      }
-                    },
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              ],
+              ),
             ),
-          ),
+          ],
         ),
       ),
     );
@@ -326,14 +350,12 @@ class EditProfilePage extends StatelessWidget {
     if (isLiked) {
       FirebaseFirestore.instance.collection('posts').doc(document.id).update({
         'likes': FieldValue.increment(-1),
-        'likedBy': FieldValue.arrayRemove(
-            [FirebaseAuth.FirebaseAuth.instance.currentUser!.email]),
+        'likedBy': FieldValue.arrayRemove([userEmail]),
       });
     } else {
       FirebaseFirestore.instance.collection('posts').doc(document.id).update({
         'likes': FieldValue.increment(1),
-        'likedBy': FieldValue.arrayUnion(
-            [FirebaseAuth.FirebaseAuth.instance.currentUser!.email]),
+        'likedBy': FieldValue.arrayUnion([userEmail]),
       });
     }
   }
