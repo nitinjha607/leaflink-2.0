@@ -3,7 +3,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' as FirebaseAuth;
 import 'package:flutter_share/flutter_share.dart';
-import 'package:leaflink/pages/Create_Post_Page.dart'; // Import the CreatePostPage
+import 'package:leaflink/pages/Create_Post_Page.dart';
+import 'package:flutter/cupertino.dart';
 
 class EditProfilePage extends StatelessWidget {
   static const String routeName = 'edit_profile_page';
@@ -45,27 +46,26 @@ class EditProfilePage extends StatelessWidget {
         ],
       ),
       body: SafeArea(
-        child: Stack(
-          children: [
-            Container(
-              alignment: Alignment.center,
-              height: MediaQuery.of(context).size.height,
-              width: MediaQuery.of(context).size.width,
-              decoration: const BoxDecoration(
-                color: Color.fromRGBO(246, 245, 235, 1),
-              ),
+        child: Container(
+          alignment: Alignment.center,
+          height: MediaQuery.of(context).size.height,
+          width: MediaQuery.of(context).size.width,
+          color: Color.fromRGBO(246, 245, 235, 1),
+          child: Container(
+            margin: const EdgeInsets.all(15),
+            width: MediaQuery.of(context).size.width,
+            decoration: const BoxDecoration(
+              borderRadius: BorderRadius.all(Radius.circular(10)),
+              color: Color.fromRGBO(204, 221, 221, 1),
             ),
-            Column(
+            child: Column(
               children: [
                 StreamBuilder<QuerySnapshot>(
                   stream: FirebaseFirestore.instance
                       .collection('events')
                       .where('userEmail',
                           isEqualTo: FirebaseAuth
-                              .FirebaseAuth
-                              .instance
-                              .currentUser!
-                              .email) // Filter events by user's email
+                              .FirebaseAuth.instance.currentUser!.email)
                       .snapshots(),
                   builder: (context, eventSnapshot) {
                     if (eventSnapshot.connectionState ==
@@ -74,7 +74,6 @@ class EditProfilePage extends StatelessWidget {
                     } else if (eventSnapshot.hasError) {
                       return Text('Error: ${eventSnapshot.error}');
                     } else {
-                      // Display events here
                       return ListView.builder(
                         shrinkWrap: true,
                         itemCount: eventSnapshot.data!.docs.length,
@@ -82,6 +81,7 @@ class EditProfilePage extends StatelessWidget {
                           final eventData = eventSnapshot.data!.docs[index]
                               .data() as Map<String, dynamic>;
                           return Card(
+                            color: Color.fromRGBO(246, 245, 235, 1),
                             margin: EdgeInsets.all(10),
                             child: ListTile(
                               title: Text(eventData['title']),
@@ -94,11 +94,11 @@ class EditProfilePage extends StatelessWidget {
                                 ],
                               ),
                               trailing: Card(
-                                color: Colors.red, // Making delete button red
+                                color: const Color.fromRGBO(97, 166, 171, 1),
                                 child: IconButton(
                                   icon: Icon(
-                                    Icons.delete,
-                                    color: Colors.white,
+                                    CupertinoIcons.delete_solid,
+                                    color: Color.fromRGBO(16, 25, 22, 1),
                                   ),
                                   onPressed: () {
                                     _deleteEvent(
@@ -121,10 +121,7 @@ class EditProfilePage extends StatelessWidget {
                         .collection('posts')
                         .where('email',
                             isEqualTo: FirebaseAuth
-                                .FirebaseAuth
-                                .instance
-                                .currentUser!
-                                .email) // Filter posts by user's email
+                                .FirebaseAuth.instance.currentUser!.email)
                         .snapshots(),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
@@ -147,7 +144,6 @@ class EditProfilePage extends StatelessWidget {
                                 ),
                                 ElevatedButton(
                                   onPressed: () {
-                                    // Redirect to create post page
                                     Navigator.pushNamed(
                                         context, CreatePostPage.routeName);
                                   },
@@ -169,9 +165,9 @@ class EditProfilePage extends StatelessWidget {
                                     .FirebaseAuth.instance.currentUser!.email);
                             return Column(
                               children: [
-                                // Card with image, caption, like, share, and delete options
                                 Card(
-                                  elevation: 5,
+                                  color: Color.fromRGBO(246, 245, 235, 1),
+                                  elevation: 0,
                                   margin: EdgeInsets.all(10),
                                   child: Column(
                                     children: [
@@ -225,7 +221,8 @@ class EditProfilePage extends StatelessWidget {
                                                   data['imageUrl']);
                                             },
                                             icon: Icon(Icons.share),
-                                            color: Colors.blue,
+                                            color: const Color.fromRGBO(
+                                                97, 166, 171, 1),
                                           ),
                                           IconButton(
                                             onPressed: () {
@@ -233,8 +230,9 @@ class EditProfilePage extends StatelessWidget {
                                                   context, document);
                                             },
                                             icon: Icon(
-                                              Icons.delete,
-                                              color: Colors.red,
+                                              CupertinoIcons.delete_solid,
+                                              color:
+                                                  Color.fromRGBO(16, 25, 22, 1),
                                             ),
                                           ),
                                         ],
@@ -252,7 +250,7 @@ class EditProfilePage extends StatelessWidget {
                 ),
               ],
             ),
-          ],
+          ),
         ),
       ),
     );
@@ -263,23 +261,55 @@ class EditProfilePage extends StatelessWidget {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Delete Post"),
-          content: Text("Are you sure you want to delete this post?"),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text("Cancel"),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8.0),
+          ),
+          title: Text(
+            "Delete Post",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontFamily: GoogleFonts.comfortaa().fontFamily,
+              fontSize: MediaQuery.of(context).size.height * 0.03,
+              color: const Color.fromRGBO(97, 166, 171, 1),
             ),
-            TextButton(
+          ),
+          content: Text(
+            "Are you sure you want to delete this post?",
+            style: TextStyle(
+                fontSize: MediaQuery.sizeOf(context).width * 0.04,
+                fontFamily: GoogleFonts.kohSantepheap().fontFamily),
+            textAlign: TextAlign.center,
+          ),
+          actions: [
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color.fromRGBO(57, 80, 92, 1),
+                foregroundColor: const Color.fromRGBO(246, 245, 235, 1),
+              ),
               onPressed: () {
                 _deletePost(document);
                 Navigator.of(context).pop();
               },
               child: Text(
-                "Delete",
-                style: TextStyle(color: Colors.red),
+                "DELETE",
+                style: TextStyle(
+                  fontFamily: GoogleFonts.kohSantepheap().fontFamily,
+                ),
+              ),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color.fromRGBO(204, 221, 221, 1),
+                foregroundColor: const Color.fromRGBO(246, 245, 235, 1),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: Text(
+                "BACK",
+                style: TextStyle(
+                  fontFamily: GoogleFonts.kohSantepheap().fontFamily,
+                ),
               ),
             ),
           ],
@@ -294,14 +324,12 @@ class EditProfilePage extends StatelessWidget {
 
   void _likePost(DocumentSnapshot document, bool isLiked) {
     if (isLiked) {
-      // Unlike post
       FirebaseFirestore.instance.collection('posts').doc(document.id).update({
         'likes': FieldValue.increment(-1),
         'likedBy': FieldValue.arrayRemove(
             [FirebaseAuth.FirebaseAuth.instance.currentUser!.email]),
       });
     } else {
-      // Like post
       FirebaseFirestore.instance.collection('posts').doc(document.id).update({
         'likes': FieldValue.increment(1),
         'likedBy': FieldValue.arrayUnion(
@@ -322,23 +350,55 @@ class EditProfilePage extends StatelessWidget {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Delete Event"),
-          content: Text("Are you sure you want to delete this event?"),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text("Cancel"),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8.0),
+          ),
+          title: Text(
+            "Delete Event",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontFamily: GoogleFonts.comfortaa().fontFamily,
+              fontSize: MediaQuery.of(context).size.height * 0.03,
+              color: const Color.fromRGBO(97, 166, 171, 1),
             ),
-            TextButton(
+          ),
+          content: Text(
+            "Are you sure you want to delete this event?",
+            style: TextStyle(
+                fontSize: MediaQuery.sizeOf(context).width * 0.04,
+                fontFamily: GoogleFonts.kohSantepheap().fontFamily),
+            textAlign: TextAlign.center,
+          ),
+          actions: [
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color.fromRGBO(57, 80, 92, 1),
+                foregroundColor: const Color.fromRGBO(246, 245, 235, 1),
+              ),
               onPressed: () {
                 documentRef.delete();
                 Navigator.of(context).pop();
               },
               child: Text(
-                "Delete",
-                style: TextStyle(color: Colors.red),
+                "DELETE",
+                style: TextStyle(
+                  fontFamily: GoogleFonts.kohSantepheap().fontFamily,
+                ),
+              ),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color.fromRGBO(204, 221, 221, 1),
+                foregroundColor: const Color.fromRGBO(246, 245, 235, 1),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: Text(
+                "BACK",
+                style: TextStyle(
+                  fontFamily: GoogleFonts.kohSantepheap().fontFamily,
+                ),
               ),
             ),
           ],
