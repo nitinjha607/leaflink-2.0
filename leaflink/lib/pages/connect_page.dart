@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:flutter/cupertino.dart';
 import 'package:leaflink/pages/eventscalendar_page.dart';
 import 'package:leaflink/pages/leaderboard_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -7,6 +8,8 @@ import 'package:flutter_share/flutter_share.dart';
 import 'package:firebase_auth/firebase_auth.dart' as FirebaseAuth;
 import 'package:leaflink/pages/home_page.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:leaflink/pages/Create_Post_Page.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 class Post {
   final String id;
@@ -59,9 +62,9 @@ class _PostCardState extends State<PostCard> {
   int? _selectedOption;
 
   final _reportOptions = [
-    'Option 1',
-    'Option 2',
-    'Option 3',
+    'Hate of Speech',
+    'Bullying/Harassment',
+    'Scam/Irrelevant',
   ];
 
   @override
@@ -74,99 +77,106 @@ class _PostCardState extends State<PostCard> {
   @override
   Widget build(BuildContext context) {
     final random = Random();
-    final randomAnimalIcon = Icons.pets;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
+    return Padding(
+      padding: const EdgeInsets.only(top: 10.0, right: 8, left: 8),
+      child: Card(
+        color: const Color.fromRGBO(246, 245, 235, 1),
+        margin: EdgeInsets.only(top: 10, left: 8, right: 8),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            CircleAvatar(
-              backgroundColor: Colors.blue,
-              child: Icon(
-                randomAnimalIcon,
-                color: Colors.white,
+            Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Row(
+                children: [
+                  CircleAvatar(
+                    backgroundColor: const Color.fromRGBO(97, 166, 171, 1),
+                    child: Icon(
+                      Symbols.eco,
+                      color: const Color.fromRGBO(246, 245, 235, 1),
+                    ),
+                  ),
+                  SizedBox(width: 8),
+                  Text(
+                    widget.post.username,
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                  Spacer(),
+                  if (!widget.post.reported)
+                    IconButton(
+                      onPressed: _showReportDialog,
+                      icon: Icon(Symbols.error),
+                      color: const Color.fromRGBO(16, 25, 22, 1),
+                    ),
+                ],
               ),
             ),
-            SizedBox(width: 8),
-            Text(
-              widget.post.username,
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
+            SizedBox(height: 8),
+            Padding(
+              padding: const EdgeInsets.only(left: 8.0),
+              child: Text(
+                widget.post.caption,
+                style: TextStyle(fontSize: 16),
               ),
             ),
-            Spacer(),
-            if (!widget.post.reported)
-              IconButton(
-                onPressed: _showReportDialog,
-                icon: Icon(Icons.report),
+            SizedBox(height: 8),
+            GestureDetector(
+              onTap: () {
+                setState(() {
+                  widget.onLike(widget.post);
+                  _isLiked = !_isLiked;
+                });
+              },
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  InkWell(
+                    onTap: () {
+                      print(widget.post.imageUrl);
+                    },
+                    child: Image.network(
+                      widget.post.imageUrl,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      IconButton(
+                        onPressed: () {
+                          setState(() {
+                            widget.onLike(widget.post);
+                            _isLiked = !_isLiked;
+                          });
+                        },
+                        icon: Icon(Icons.favorite),
+                        color: _isLiked ? Colors.red : Colors.grey,
+                        iconSize: 30,
+                      ),
+                      Text(
+                        '${widget.post.likes} Likes',
+                        style: TextStyle(fontSize: 16),
+                      ),
+                      IconButton(
+                        onPressed: () {
+                          _sharePost(widget.post.caption, widget.post.imageUrl);
+                        },
+                        icon: Icon(Icons.share),
+                        color: const Color.fromRGBO(97, 166, 171, 1),
+                        iconSize: 30,
+                      ),
+                    ],
+                  ),
+                ],
               ),
+            ),
           ],
         ),
-        SizedBox(height: 8),
-        Padding(
-          padding: const EdgeInsets.only(left: 8.0),
-          child: Text(
-            widget.post.caption,
-            style: TextStyle(fontSize: 16),
-          ),
-        ),
-        SizedBox(height: 8),
-        GestureDetector(
-          onTap: () {
-            setState(() {
-              widget.onLike(widget.post);
-              _isLiked = !_isLiked;
-            });
-          },
-          child: Card(
-            margin: EdgeInsets.symmetric(horizontal: 8),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                InkWell(
-                  onTap: () {
-                    print(widget.post.imageUrl);
-                  },
-                  child: Image.network(
-                    widget.post.imageUrl,
-                    fit: BoxFit.cover,
-                  ),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    IconButton(
-                      onPressed: () {
-                        setState(() {
-                          widget.onLike(widget.post);
-                          _isLiked = !_isLiked;
-                        });
-                      },
-                      icon: Icon(Icons.favorite),
-                      color: _isLiked ? Colors.red : Colors.grey,
-                      iconSize: 30,
-                    ),
-                    Text(
-                      '${widget.post.likes} Likes',
-                      style: TextStyle(fontSize: 16),
-                    ),
-                    IconButton(
-                      onPressed: () {
-                        _sharePost(widget.post.caption, widget.post.imageUrl);
-                      },
-                      icon: Icon(Icons.share),
-                      color: Colors.blue,
-                      iconSize: 30,
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
+      ),
     );
   }
 
@@ -184,7 +194,15 @@ class _PostCardState extends State<PostCard> {
         return StatefulBuilder(
           builder: (context, setState) {
             return AlertDialog(
-              title: Text('Report Post'),
+              title: Text(
+                'Report Post',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontFamily: GoogleFonts.comfortaa().fontFamily,
+                  fontSize: MediaQuery.of(context).size.height * 0.03,
+                  color: const Color.fromRGBO(97, 166, 171, 1),
+                ),
+              ),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -198,19 +216,42 @@ class _PostCardState extends State<PostCard> {
                           _selectedOption = value as int?;
                         });
                       },
+                      activeColor: const Color.fromRGBO(97, 166, 171, 1),
                     ),
                 ],
               ),
-              actions: <Widget>[
-                TextButton(
+              actions: [
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color.fromRGBO(57, 80, 92, 1),
+                    foregroundColor: const Color.fromRGBO(246, 245, 235, 1),
+                  ),
                   onPressed: () {
-                    Navigator.of(context).pop();
+                    _selectedOption != null ? _submitReport : null;
+
+                    Navigator.of(context).pop(); // Close the dialog
                   },
-                  child: Text('Cancel'),
+                  child: Text(
+                    "SUBMIT",
+                    style: TextStyle(
+                      fontFamily: GoogleFonts.kohSantepheap().fontFamily,
+                    ),
+                  ),
                 ),
                 ElevatedButton(
-                  onPressed: _selectedOption != null ? _submitReport : null,
-                  child: Text('Submit'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color.fromRGBO(204, 221, 221, 1),
+                    foregroundColor: const Color.fromRGBO(246, 245, 235, 1),
+                  ),
+                  onPressed: () {
+                    Navigator.of(context).pop(); // Close the dialog
+                  },
+                  child: Text(
+                    "BACK",
+                    style: TextStyle(
+                      fontFamily: GoogleFonts.kohSantepheap().fontFamily,
+                    ),
+                  ),
                 ),
               ],
             );
@@ -345,39 +386,63 @@ class _ConnectPageState extends State<ConnectPage> {
             color: const Color.fromRGBO(16, 25, 22, 1),
           ),
         ),
+        actions: [
+          IconButton(
+            onPressed: () {
+              // Redirect to create post page
+              Navigator.pushNamed(context, CreatePostPage.routeName);
+            },
+            icon: Icon(Icons.add),
+            color: Color.fromARGB(255, 0, 0, 0),
+          ),
+        ],
         backgroundColor: const Color.fromRGBO(97, 166, 171, 1),
       ),
       body: SafeArea(
-        child: _loading
-            ? Center(child: CircularProgressIndicator())
-            : _error
-                ? Center(
-                    child: Text(
-                      'Error fetching posts. Please try again later.',
-                      style: TextStyle(
-                        color: Colors.red,
-                        fontSize: 16,
+        child: Container(
+          alignment: Alignment.center,
+          height: MediaQuery.of(context).size.height,
+          width: MediaQuery.of(context).size.width,
+          color: Color.fromRGBO(246, 245, 235, 1),
+          child: Container(
+            margin: const EdgeInsets.all(15),
+            width: MediaQuery.of(context).size.width,
+            decoration: const BoxDecoration(
+              borderRadius: BorderRadius.all(Radius.circular(10)),
+              color: Color.fromRGBO(204, 221, 221, 1),
+            ),
+            child: _loading
+                ? Center(child: CircularProgressIndicator())
+                : _error
+                    ? Center(
+                        child: Text(
+                          'Error fetching posts. Please try again later.',
+                          style: TextStyle(
+                            color: Colors.red,
+                            fontSize: 16,
+                          ),
+                        ),
+                      )
+                    : RefreshIndicator(
+                        onRefresh: _fetchPosts,
+                        child: ListView.separated(
+                          itemCount: _posts.length,
+                          separatorBuilder: (BuildContext context, int index) =>
+                              SizedBox(height: 16),
+                          itemBuilder: (BuildContext context, int index) {
+                            if (!_posts[index].reported) {
+                              return PostCard(
+                                post: _posts[index],
+                                onLike: _handleLike,
+                              );
+                            } else {
+                              return SizedBox.shrink();
+                            }
+                          },
+                        ),
                       ),
-                    ),
-                  )
-                : RefreshIndicator(
-                    onRefresh: _fetchPosts,
-                    child: ListView.separated(
-                      itemCount: _posts.length,
-                      separatorBuilder: (BuildContext context, int index) =>
-                          SizedBox(height: 16),
-                      itemBuilder: (BuildContext context, int index) {
-                        if (!_posts[index].reported) {
-                          return PostCard(
-                            post: _posts[index],
-                            onLike: _handleLike,
-                          );
-                        } else {
-                          return SizedBox.shrink();
-                        }
-                      },
-                    ),
-                  ),
+          ),
+        ),
       ),
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: const Color.fromRGBO(97, 166, 171, 1),
