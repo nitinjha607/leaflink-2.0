@@ -43,66 +43,38 @@ class _LoaderPageState extends State<LoaderPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Stack(
-          children: [
-            Container(
-              alignment: Alignment.center,
-              height: MediaQuery.of(context).size.height,
-              width: MediaQuery.of(context).size.width,
-              decoration: const BoxDecoration(
-                color: Color.fromRGBO(246, 245, 235, 1),
-              ),
-            ),
-            Container(
-              alignment: Alignment.center,
-              child: Container(
-                margin: const EdgeInsets.all(15),
-                height: MediaQuery.of(context).size.height,
-                width: MediaQuery.of(context).size.width,
-                decoration: const BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(10)),
-                  color: Color.fromRGBO(204, 221, 221, 1),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: LoadingAnimationWidget.dotsTriangle(
-                    color: Color.fromRGBO(97, 166, 171, 1),
-                    size: 50, // Adjust loader size
-                  ),
+      body: Center(
+        child: Container(
+          margin: EdgeInsets.all(15),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            color: Color.fromRGBO(204, 221, 221, 1),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: LoadingAnimationWidget.dotsTriangle(
+                  color: Color.fromRGBO(97, 166, 171, 1),
+                  size: 50, // Adjust loader size
                 ),
               ),
-            ),
-            Positioned(
-              bottom: 20,
-              left: 20,
-              right: 20,
-              child: Container(
+              Padding(
                 padding: EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(10),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.5),
-                      spreadRadius: 2,
-                      blurRadius: 5,
-                      offset: Offset(0, 3), // changes position of shadow
-                    ),
-                  ],
-                ),
                 child: Text(
                   randomFact,
                   textAlign: TextAlign.center,
-                  style: GoogleFonts.lato(
+                  style: GoogleFonts.comfortaa(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                     color: Colors.black,
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
