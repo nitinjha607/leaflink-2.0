@@ -170,6 +170,13 @@ class LoginPage extends StatelessWidget {
         return Column(
           children: [
             Padding(
+              padding: EdgeInsets.all(10),
+              child: Image.asset(
+                'assets/images/logo.png',
+                height: 55.0,
+              ),
+            ),
+            Padding(
               padding: const EdgeInsets.all(40.0),
               child: Text(
                 'Welcome back, you\'ve been missed!',
