@@ -105,6 +105,8 @@ class _CalendarPageState extends State<CalendarPage> {
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: const Color.fromRGBO(97, 166, 171, 1),
         type: BottomNavigationBarType.fixed,
+        showSelectedLabels: true,
+        showUnselectedLabels: false,
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.home_filled),
