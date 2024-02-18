@@ -9,6 +9,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:intl/intl.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class CalendarPage extends StatefulWidget {
   static const String routeName = 'calendar_page';
@@ -61,7 +62,14 @@ class _CalendarPageState extends State<CalendarPage> {
                 stream: getDatesStream(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Center(child: CircularProgressIndicator());
+                    return Center(
+                        child: Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: LoadingAnimationWidget.dotsTriangle(
+                        color: Color.fromRGBO(97, 166, 171, 1),
+                        size: 50, // Adjust loader size
+                      ),
+                    ));
                   } else if (snapshot.hasError) {
                     return Center(child: Text('Error: ${snapshot.error}'));
                   } else {
