@@ -16,6 +16,7 @@ import 'package:leaflink/pages/Create_Post_Page.dart';
 import 'package:leaflink/pages/added_events.dart';
 import 'package:leaflink/solutionpage.dart';
 import 'package:leaflink/pages/loader_page.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -71,7 +72,13 @@ class AuthenticationWrapper extends StatelessWidget {
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return CircularProgressIndicator(); // or a loading screen
+          return Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: LoadingAnimationWidget.dotsTriangle(
+              color: Color.fromRGBO(97, 166, 171, 1),
+              size: 50, // Adjust loader size
+            ),
+          ); // or a loading screen
         } else if (snapshot.hasData) {
           return HomePage(); // user is logged in
         } else {
