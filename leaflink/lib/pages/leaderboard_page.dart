@@ -5,6 +5,7 @@ import 'package:leaflink/pages/connect_page.dart';
 import 'package:leaflink/pages/eventscalendar_page.dart';
 import 'package:leaflink/pages/home_page.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class LeaderboardPage extends StatefulWidget {
   static const String routeName = 'leaderboard_page';
@@ -114,7 +115,14 @@ Widget ranklist() {
     future: Firebase.initializeApp(),
     builder: (context, snapshot) {
       if (snapshot.connectionState == ConnectionState.waiting) {
-        return Center(child: CircularProgressIndicator());
+        return Center(
+            child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: LoadingAnimationWidget.dotsTriangle(
+            color: Color.fromRGBO(97, 166, 171, 1),
+            size: 50, // Adjust loader size
+          ),
+        ));
       }
       if (snapshot.hasError) {
         return Center(child: Text('Error: ${snapshot.error}'));
@@ -123,7 +131,14 @@ Widget ranklist() {
         stream: FirebaseFirestore.instance.collection("graphdata").snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return Center(
+                child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: LoadingAnimationWidget.dotsTriangle(
+                color: Color.fromRGBO(97, 166, 171, 1),
+                size: 50, // Adjust loader size
+              ),
+            ));
           }
           if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
