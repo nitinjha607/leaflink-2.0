@@ -4,6 +4,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class CreatePostPage extends StatefulWidget {
   static const String routeName = 'create_post_page';
@@ -145,15 +147,24 @@ class _CreatePostPageState extends State<CreatePostPage> {
         title: Text(
           'Create Post',
           style: TextStyle(
-            color: Colors.white,
+            fontFamily: GoogleFonts.comfortaa().fontFamily,
+            fontSize: MediaQuery.of(context).size.height * 0.03,
+            color: const Color.fromRGBO(16, 25, 22, 1),
           ),
         ),
-        centerTitle: true,
         backgroundColor: Color.fromRGBO(97, 166, 171, 1),
       ),
-      backgroundColor: Colors.green[50],
+      backgroundColor: Color.fromRGBO(246, 245, 235, 1),
       body: isLoading
-          ? Center(child: CircularProgressIndicator())
+          ? Center(
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: LoadingAnimationWidget.dotsTriangle(
+                  color: Color.fromRGBO(97, 166, 171, 1),
+                  size: 50, // Adjust loader size
+                ),
+              ),
+            )
           : SingleChildScrollView(
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
@@ -191,12 +202,26 @@ class _CreatePostPageState extends State<CreatePostPage> {
                     SizedBox(height: 16),
                     TextField(
                       controller: _captionController,
-                      decoration: InputDecoration(
-                        labelText: 'Write a caption...',
-                        border: OutlineInputBorder(),
-                        filled: true,
-                        fillColor: Colors.grey[200],
+                      style: TextStyle(
+                        fontSize: 15.0,
                       ),
+                      decoration: InputDecoration(
+                          enabledBorder: const OutlineInputBorder(
+                            borderSide: BorderSide(
+                                color: Color.fromRGBO(252, 251, 241, 1)),
+                          ),
+                          focusedBorder: const OutlineInputBorder(
+                            borderSide: BorderSide(
+                                color: Color.fromRGBO(204, 221, 221, 1)),
+                          ),
+                          fillColor: const Color.fromRGBO(204, 221, 221, 1),
+                          filled: true,
+                          labelText: 'Write a caption...',
+                          labelStyle: TextStyle(
+                            color: Color.fromRGBO(97, 166, 171, 1),
+                            fontFamily: GoogleFonts.kohSantepheap().fontFamily,
+                          )),
+                      cursorColor: Color.fromRGBO(97, 166, 171, 1),
                       maxLines: 4,
                     ),
                     SizedBox(height: 16),
@@ -214,7 +239,8 @@ class _CreatePostPageState extends State<CreatePostPage> {
                           'Share',
                           style: TextStyle(
                             fontSize: 18,
-                            color: Colors.white,
+                            color: Color.fromRGBO(246, 245, 235, 1),
+                            fontFamily: GoogleFonts.comfortaa().fontFamily,
                           ),
                         ),
                       ),
