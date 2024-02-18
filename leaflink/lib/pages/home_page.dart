@@ -506,12 +506,24 @@ class _HomePageState extends State<HomePage> {
                   borderRadius: BorderRadius.only(
                       bottomRight: Radius.circular(25), topRight: Radius.zero),
                 ),
-                child: Text("L E A F L I N K",
-                    style: TextStyle(
-                      fontFamily: GoogleFonts.comfortaa().fontFamily,
-                      fontSize: MediaQuery.of(context).size.height * 0.04,
-                      color: const Color.fromRGBO(16, 25, 22, 1),
-                    ))),
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.only(top: 40, bottom: 10),
+                      child: Image.asset(
+                        'assets/images/logo.png',
+                        height: 55.0,
+                        color: Colors.white,
+                      ),
+                    ),
+                    Text("L E A F L I N K",
+                        style: TextStyle(
+                          fontFamily: GoogleFonts.comfortaa().fontFamily,
+                          fontSize: MediaQuery.of(context).size.height * 0.04,
+                          color: const Color.fromRGBO(16, 25, 22, 1),
+                        )),
+                  ],
+                )),
           ]),
         ),
 
@@ -576,7 +588,9 @@ class _HomePageState extends State<HomePage> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Padding(
-                                  padding: EdgeInsets.symmetric(horizontal: 25),
+                                  padding: EdgeInsets.only(
+                                      left: MediaQuery.of(context).size.width *
+                                          0.07),
                                   child: Text(
                                     'Scan Here',
                                     style: TextStyle(
@@ -596,14 +610,21 @@ class _HomePageState extends State<HomePage> {
                                         const Color.fromRGBO(246, 245, 235, 1),
                                     foregroundColor:
                                         const Color.fromRGBO(57, 80, 92, 1),
+                                    shape: const CircleBorder(
+                                        side: BorderSide(
+                                      color: Colors.transparent,
+                                    )),
                                   ),
                                   onPressed: () {
                                     captureImageAndRedirect();
                                   },
-                                  child: Icon(
-                                    Icons.camera_alt,
-                                    size: MediaQuery.of(context).size.height *
-                                        0.035,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Icon(
+                                      Icons.camera_alt,
+                                      size: MediaQuery.of(context).size.height *
+                                          0.035,
+                                    ),
                                   ),
                                 ),
                               ],
@@ -669,6 +690,8 @@ class _HomePageState extends State<HomePage> {
 
         //navbar
         bottomNavigationBar: BottomNavigationBar(
+          showSelectedLabels: true,
+          showUnselectedLabels: false,
           backgroundColor: const Color.fromRGBO(97, 166, 171, 1),
           type: BottomNavigationBarType.fixed,
           items: const <BottomNavigationBarItem>[
