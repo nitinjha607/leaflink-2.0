@@ -10,6 +10,7 @@ import 'package:leaflink/pages/home_page.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:leaflink/pages/Create_Post_Page.dart';
 import 'package:material_symbols_icons/symbols.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class Post {
   final String id;
@@ -412,7 +413,14 @@ class _ConnectPageState extends State<ConnectPage> {
               color: Color.fromRGBO(204, 221, 221, 1),
             ),
             child: _loading
-                ? Center(child: CircularProgressIndicator())
+                ? Center(
+                    child: Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: LoadingAnimationWidget.dotsTriangle(
+                      color: Color.fromRGBO(97, 166, 171, 1),
+                      size: 50, // Adjust loader size
+                    ),
+                  ))
                 : _error
                     ? Center(
                         child: Text(
