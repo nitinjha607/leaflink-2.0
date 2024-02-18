@@ -6,6 +6,7 @@ import 'package:leaflink/components/my_textfield.dart';
 import 'package:leaflink/components/google_sign_in_button.dart';
 import 'package:leaflink/pages/forgotpass_page.dart';
 import 'package:leaflink/pages/home_page.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class LoginPage extends StatelessWidget {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -175,6 +176,7 @@ class LoginPage extends StatelessWidget {
                 style: TextStyle(
                   color: const Color.fromRGBO(16, 25, 22, 1),
                   fontSize: MediaQuery.of(context).size.height * 0.025,
+                  fontFamily: GoogleFonts.comfortaa().fontFamily,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -224,6 +226,7 @@ class LoginPage extends StatelessWidget {
                       style: TextStyle(
                         color: Color.fromRGBO(16, 25, 22, 1),
                         fontSize: MediaQuery.of(context).size.height * 0.02,
+                        fontFamily: GoogleFonts.comfortaa().fontFamily,
                       ),
                     ),
                   ),
@@ -255,6 +258,7 @@ class LoginPage extends StatelessWidget {
                   style: TextStyle(
                     fontSize: MediaQuery.of(context).size.height * 0.02,
                     color: Color.fromRGBO(16, 25, 22, 1),
+                    fontFamily: GoogleFonts.comfortaa().fontFamily,
                   ),
                 ),
                 GestureDetector(
@@ -262,10 +266,10 @@ class LoginPage extends StatelessWidget {
                   child: Text(
                     'Register now',
                     style: TextStyle(
-                      color: const Color.fromRGBO(97, 166, 171, 1),
-                      fontSize: MediaQuery.of(context).size.height * 0.02,
-                      fontWeight: FontWeight.bold,
-                    ),
+                        color: const Color.fromRGBO(97, 166, 171, 1),
+                        fontSize: MediaQuery.of(context).size.height * 0.02,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: GoogleFonts.kohSantepheap().fontFamily),
                   ),
                 ),
               ],
