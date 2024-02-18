@@ -116,7 +116,14 @@ class RegisterPage extends StatelessWidget {
                   child: Column(
                     children: [
                       Padding(
-                        padding: const EdgeInsets.only(top: 70.0, bottom: 10),
+                        padding: EdgeInsets.only(top: 60),
+                        child: Image.asset(
+                          'assets/images/logo.png',
+                          height: 55.0,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 50.0, bottom: 10),
                         child: Text(
                           'Welcome to Leaflink!',
                           style: TextStyle(
