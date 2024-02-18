@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart' as FirebaseAuth;
 import 'package:flutter_share/flutter_share.dart';
 import 'package:leaflink/pages/Create_Post_Page.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class EditProfilePage extends StatelessWidget {
   static const String routeName = 'edit_profile_page';
@@ -55,10 +56,13 @@ class EditProfilePage extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text(
-                'User Email: $userEmail',
+                'Your Email: $userEmail',
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
+                  fontFamily: GoogleFonts.kohSantepheap().fontFamily,
+                  backgroundColor: Color.fromRGBO(246, 245, 235, 1),
+                  color: Color.fromRGBO(16, 25, 22, 1),
                 ),
               ),
             ),
@@ -85,7 +89,13 @@ class EditProfilePage extends StatelessWidget {
                         builder: (context, eventSnapshot) {
                           if (eventSnapshot.connectionState ==
                               ConnectionState.waiting) {
-                            return CircularProgressIndicator();
+                            return Padding(
+                              padding: const EdgeInsets.all(20.0),
+                              child: LoadingAnimationWidget.dotsTriangle(
+                                color: Color.fromRGBO(97, 166, 171, 1),
+                                size: 50, // Adjust loader size
+                              ),
+                            );
                           } else if (eventSnapshot.hasError) {
                             return Text('Error: ${eventSnapshot.error}');
                           } else {
@@ -143,7 +153,13 @@ class EditProfilePage extends StatelessWidget {
                             if (snapshot.connectionState ==
                                 ConnectionState.waiting) {
                               return Center(
-                                child: CircularProgressIndicator(),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(20.0),
+                                  child: LoadingAnimationWidget.dotsTriangle(
+                                    color: Color.fromRGBO(97, 166, 171, 1),
+                                    size: 50, // Adjust loader size
+                                  ),
+                                ),
                               );
                             } else if (snapshot.hasError) {
                               return Center(
@@ -160,11 +176,24 @@ class EditProfilePage extends StatelessWidget {
                                         style: TextStyle(fontSize: 18),
                                       ),
                                       ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: const Color.fromRGBO(
+                                              57, 80, 92, 1),
+                                          foregroundColor: const Color.fromRGBO(
+                                              246, 245, 235, 1),
+                                        ),
                                         onPressed: () {
                                           Navigator.pushNamed(context,
                                               CreatePostPage.routeName);
                                         },
-                                        child: Text("Create your first post"),
+                                        child: Text(
+                                          "Create your first post",
+                                          style: TextStyle(
+                                            fontFamily:
+                                                GoogleFonts.kohSantepheap()
+                                                    .fontFamily,
+                                          ),
+                                        ),
                                       ),
                                     ],
                                   ),
