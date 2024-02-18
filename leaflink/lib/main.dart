@@ -14,6 +14,7 @@ import 'package:leaflink/pages/leaderboard_page.dart';
 import 'package:leaflink/pages/eventmanagement_page.dart';
 import 'package:leaflink/pages/Create_Post_Page.dart';
 import 'package:leaflink/pages/added_events.dart';
+import 'package:leaflink/pages/welcome_page.dart';
 import 'package:leaflink/solutionpage.dart';
 import 'package:leaflink/pages/loader_page.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
@@ -82,7 +83,7 @@ class AuthenticationWrapper extends StatelessWidget {
         } else if (snapshot.hasData) {
           return HomePage(); // user is logged in
         } else {
-          return LogInOrRegister(); // user is not logged in
+          return WelcomePage(); // user is not logged in
         }
       },
     );
