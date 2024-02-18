@@ -136,12 +136,15 @@ class _EventManagementPageState extends State<EventManagementPage> {
       initialDate: _selectedDate,
       firstDate: DateTime(2000),
       lastDate: DateTime(2101),
+      initialEntryMode: DatePickerEntryMode.calendarOnly,
     );
-    if (picked != null && picked != _selectedDate)
+    if (picked != null && picked != _selectedDate) {
       setState(() {
         _selectedDate = picked;
-        dateController.text = _formatDate(_selectedDate);
+        dateController.text =
+            _formatDate(_selectedDate); // Update date controller
       });
+    }
   }
 
   void _submitForm() {
