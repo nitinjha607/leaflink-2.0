@@ -189,7 +189,7 @@ class _EventManagementPageState extends State<EventManagementPage> {
           'venue': venueController.text,
           'date': _formatDate(_selectedDate),
           'time': _formatTime(_selectedTime),
-          'userEmail': FirebaseAuth.instance.currentUser!.email,
+          'email': FirebaseAuth.instance.currentUser!.email,
         })
         .then((value) => {
               ScaffoldMessenger.of(context).showSnackBar(
