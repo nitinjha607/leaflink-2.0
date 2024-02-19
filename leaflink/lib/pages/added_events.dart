@@ -1,167 +1,254 @@
-// ignore_for_file: library_private_types_in_public_api
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
+import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:google_fonts/google_fonts.dart';
 
-class AddedEventsPage extends StatefulWidget {
-  static const String routeName = 'added_events';
+class CreatePostPage extends StatefulWidget {
+  static const String routeName = 'create_post_page';
 
-  const AddedEventsPage({Key? key}) : super(key: key);
+  const CreatePostPage({Key? key}) : super(key: key);
 
   @override
-  _AddedEventsPageState createState() => _AddedEventsPageState();
+  _CreatePostPageState createState() => _CreatePostPageState();
 }
 
-class _AddedEventsPageState extends State<AddedEventsPage> {
+class _CreatePostPageState extends State<CreatePostPage> {
+  TextEditingController _captionController = TextEditingController();
+  final _imagePicker = ImagePicker();
+  File? _image;
+  bool isLoading = false;
+  late String? _userId; // Variable to hold the user's UID
+
+  @override
+  void initState() {
+    super.initState();
+    // Get the current user's UID when the widget initializes
+    _userId = FirebaseAuth.instance.currentUser?.uid;
+  }
+
+  Future<void> _selectImage() async {
+    final pickedFile =
+        await _imagePicker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      setState(() {
+        _image = File(pickedFile.path);
+      });
+    }
+  }
+
+  Future<void> postImage() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    try {
+      // Upload to Firebase Storage
+      firebase_storage.Reference ref = firebase_storage.FirebaseStorage.instance
+          .ref()
+          .child('posts/${DateTime.now().toString()}');
+
+      await ref.putFile(_image!);
+
+      // Get download URL
+      final String downloadURL = await ref.getDownloadURL();
+      final String userEmail = FirebaseAuth.instance.currentUser!.email!;
+      int currentWeek = ((DateTime.now()
+                  .difference(
+                      DateTime(DateTime.now().year, DateTime.now().month, 1))
+                  .inDays) /
+              7)
+          .ceil();
+
+      // Save post to Firestore
+      await FirebaseFirestore.instance.collection('posts').add({
+        'imageUrl': downloadURL,
+        'caption': _captionController.text,
+        'timestamp': Timestamp.now(),
+        'email': userEmail,
+        'likes': 0,
+        'likedBy': [],
+      });
+
+      // Initialize graphdata if not exist for the user
+      if (_userId != null) {
+        final graphDataRef =
+            FirebaseFirestore.instance.collection('graphdata').doc(_userId!);
+        graphDataRef.get().then((docSnapshot) {
+          if (!docSnapshot.exists) {
+            // Initialize week data for a new user
+            Map<String, dynamic> initData = {
+              'email': userEmail,
+              'week1': 0,
+              'week2': 0,
+              'week3': 0,
+              'week4': 0,
+              'week5': 0,
+              'total': 0,
+            };
+            graphDataRef.set(initData);
+          }
+          // Increment the current week's value in graphdata
+          graphDataRef.update({
+            'week$currentWeek': FieldValue.increment(1),
+          }).then((_) {
+            // Update total field
+            graphDataRef.get().then((docSnapshot) {
+              if (docSnapshot.exists) {
+                num total = 0;
+                for (int i = 1; i <= 5; i++) {
+                  total += (docSnapshot.data()!['week$i'] ?? 0) as num;
+                }
+                graphDataRef.update({'total': total.toInt()});
+              }
+            });
+          });
+        });
+      }
+
+      // Hide loading indicator
+      setState(() {
+        isLoading = false;
+      });
+
+      // Show success message
+      showSnackBar('Posted successfully!');
+
+      // Navigate back
+      Navigator.pop(context);
+    } catch (e) {
+      // Hide loading indicator
+      setState(() {
+        isLoading = false;
+      });
+
+      print('Error creating post: $e');
+      showSnackBar('Error creating post. Please try again.');
+    }
+  }
+
+  void showSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        duration: Duration(seconds: 2),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        toolbarHeight: MediaQuery.of(context).size.height * 0.075,
         title: Text(
-          "Upcoming Events",
+          'Create Post',
           style: TextStyle(
             fontFamily: GoogleFonts.comfortaa().fontFamily,
             fontSize: MediaQuery.of(context).size.height * 0.03,
             color: const Color.fromRGBO(16, 25, 22, 1),
           ),
         ),
-        backgroundColor: const Color.fromRGBO(97, 166, 171, 1),
+        backgroundColor: Color.fromRGBO(97, 166, 171, 1),
       ),
-      body: SafeArea(
-        child: Stack(
-          children: [
-            Container(
-              alignment: Alignment.center,
-              height: MediaQuery.of(context).size.height,
-              width: MediaQuery.of(context).size.width,
-              decoration: const BoxDecoration(
-                color: Color.fromRGBO(246, 245, 235, 1),
-              ),
-            ),
-            Container(
-              alignment: Alignment.center,
-              child: Container(
-                margin: const EdgeInsets.all(15),
-                height: MediaQuery.of(context).size.height,
-                width: MediaQuery.of(context).size.width,
-                decoration: const BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(10)),
-                  color: Color.fromRGBO(204, 221, 221, 1),
+      backgroundColor: Color.fromRGBO(246, 245, 235, 1),
+      body: isLoading
+          ? Center(
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: LoadingAnimationWidget.dotsTriangle(
+                  color: Color.fromRGBO(97, 166, 171, 1),
+                  size: 50, // Adjust loader size
                 ),
-                child: eventsList(),
+              ),
+            )
+          : SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    SizedBox(height: 16),
+                    Container(
+                      height: 200,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        color: Color.fromRGBO(97, 166, 171, 1),
+                      ),
+                      child: InkWell(
+                        onTap: _selectImage,
+                        child: _image != null
+                            ? ClipRRect(
+                                borderRadius: BorderRadius.circular(10),
+                                child: Image.file(
+                                  _image!,
+                                  width: double.infinity,
+                                  height: double.infinity,
+                                  fit: BoxFit.cover,
+                                ),
+                              )
+                            : Center(
+                                child: Icon(
+                                  Icons.camera_alt,
+                                  color: Colors.black,
+                                  size: 50,
+                                ),
+                              ),
+                      ),
+                    ),
+                    SizedBox(height: 16),
+                    TextField(
+                      controller: _captionController,
+                      style: TextStyle(
+                        fontSize: 15.0,
+                      ),
+                      decoration: InputDecoration(
+                          enabledBorder: const OutlineInputBorder(
+                            borderSide: BorderSide(
+                                color: Color.fromRGBO(252, 251, 241, 1)),
+                          ),
+                          focusedBorder: const OutlineInputBorder(
+                            borderSide: BorderSide(
+                                color: Color.fromRGBO(204, 221, 221, 1)),
+                          ),
+                          fillColor: const Color.fromRGBO(204, 221, 221, 1),
+                          filled: true,
+                          labelText: 'Write a caption...',
+                          labelStyle: TextStyle(
+                            color: Color.fromRGBO(97, 166, 171, 1),
+                            fontFamily: GoogleFonts.kohSantepheap().fontFamily,
+                          )),
+                      cursorColor: Color.fromRGBO(97, 166, 171, 1),
+                      maxLines: 4,
+                    ),
+                    SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: postImage,
+                      style: ElevatedButton.styleFrom(
+                        primary: Color.fromRGBO(97, 166, 171, 1),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        child: Text(
+                          'Share',
+                          style: TextStyle(
+                            fontSize: 18,
+                            color: Color.fromRGBO(246, 245, 235, 1),
+                            fontFamily: GoogleFonts.comfortaa().fontFamily,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ],
-        ),
-      ),
     );
   }
-}
-
-Widget eventsList() {
-  return FutureBuilder(
-    future: Firebase.initializeApp(),
-    builder: (context, snapshot) {
-      if (snapshot.connectionState == ConnectionState.waiting) {
-        return Center(
-            child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: LoadingAnimationWidget.dotsTriangle(
-            color: Color.fromRGBO(97, 166, 171, 1),
-            size: 50, // Adjust loader size
-          ),
-        ));
-      }
-      if (snapshot.hasError) {
-        return Center(child: Text('Error: ${snapshot.error}'));
-      }
-      return StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance.collection("events").snapshots(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(
-                child: Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: LoadingAnimationWidget.dotsTriangle(
-                color: Color.fromRGBO(97, 166, 171, 1),
-                size: 50, // Adjust loader size
-              ),
-            ));
-          }
-          if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          }
-          return ListView(
-            children: snapshot.data!.docs.map((doc) {
-              return Card(
-                color: Color.fromRGBO(246, 245, 235, 1),
-                elevation: 2, // Add elevation for a raised effect
-                margin: EdgeInsets.symmetric(
-                    vertical: 8, horizontal: 16), // Add margin for spacing
-                child: ListTile(
-                  contentPadding:
-                      EdgeInsets.all(16), // Add padding for inner content
-                  title: Text(
-                    doc['title'],
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18,
-                    ),
-                  ),
-                  subtitle: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(height: 8), // Add spacing between elements
-                      Row(
-                        children: [
-                          Icon(Icons.location_on, size: 16, color: Colors.grey),
-                          SizedBox(width: 8),
-                          Text(
-                            doc['venue'],
-                            style: TextStyle(fontSize: 14, color: Colors.grey),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 4), // Add spacing between elements
-                      Row(
-                        children: [
-                          Icon(Icons.access_time, size: 16, color: Colors.grey),
-                          SizedBox(width: 8),
-                          Text(
-                            doc['time'],
-                            style: TextStyle(fontSize: 14, color: Colors.grey),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 4), // Add spacing between elements
-                      Row(
-                        children: [
-                          Icon(Icons.person, size: 16, color: Colors.grey),
-                          SizedBox(width: 8),
-                          Text(
-                            doc['name'],
-                            style: TextStyle(fontSize: 14, color: Colors.grey),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                  trailing: Text(
-                    doc['date'],
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey,
-                    ),
-                  ),
-                ),
-              );
-            }).toList(),
-          );
-        },
-      );
-    },
-  );
 }
