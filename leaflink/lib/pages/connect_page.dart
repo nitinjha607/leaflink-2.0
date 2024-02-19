@@ -380,13 +380,12 @@ class _ConnectPageState extends State<ConnectPage> {
       appBar: AppBar(
         toolbarHeight: MediaQuery.of(context).size.height * 0.075,
         automaticallyImplyLeading: false,
-        title: Text(
-          "Connect",
-          style: TextStyle(
-            fontSize: MediaQuery.of(context).size.height * 0.04,
-            color: const Color.fromRGBO(16, 25, 22, 1),
-          ),
-        ),
+        title: Text("Connect",
+            style: TextStyle(
+              fontFamily: GoogleFonts.comfortaa().fontFamily,
+              fontSize: MediaQuery.of(context).size.height * 0.04,
+              color: const Color.fromRGBO(16, 25, 22, 1),
+            )),
         actions: [
           IconButton(
             onPressed: () {
