@@ -5,6 +5,7 @@ import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:leaflink/pages/welcome_page.dart';
 import 'package:leaflink/solutionpage.dart';
 import 'package:leaflink/pages/loader_page.dart';
 import 'package:image_picker/image_picker.dart';
@@ -21,6 +22,7 @@ import 'package:leaflink/pages/graphicaldata/bar_chart.dart';
 import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:google_gemini/google_gemini.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 //import 'package:image_cropper/image_cropper.dart';
 
@@ -141,39 +143,52 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  // Function to handle user account deletion
   Future<void> deleteUserAccount(BuildContext context) async {
     try {
       User? user = FirebaseAuth.instance.currentUser;
 
       if (user != null) {
-        await user.delete();
+        String userEmail = user.email ?? '';
 
-        print('User account deleted successfully');
+        await FirebaseAuth.instance.currentUser?.delete();
 
-        ScaffoldMessenger.of(_scaffoldKey.currentContext!).showSnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Your account has been deleted. Please logout.'),
+            content: Text('Your account and data have been deleted.'),
           ),
         );
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => LogInOrRegister(), // Your login page widget
-          ),
-        );
+
+        // Delete user data from Firestore from multiple collections
+        List<String> collectionsToDelete = ['events', 'graphdata', 'posts'];
+
+        for (String collectionName in collectionsToDelete) {
+          await FirebaseFirestore.instance
+              .collection(collectionName)
+              .where('email', isEqualTo: userEmail)
+              .get()
+              .then((querySnapshot) {
+            querySnapshot.docs.forEach((doc) {
+              doc.reference.delete();
+            });
+          });
+          print('User data deleted from $collectionName collection');
+        }
+
+        print('User account deleted');
+
+        // Navigate to login or register page
       } else {
-        ScaffoldMessenger.of(_scaffoldKey.currentContext!).showSnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Your account has been deleted. Please logout.'),
+            content: Text('Your account has been deleted please logout'),
           ),
         );
 
+        Navigator.pushNamed(context, WelcomePage.routeName);
         print('No user is currently signed in');
       }
     } catch (e) {
       print('Error during account deletion: $e');
-      // Handle error as needed
     }
   }
 
