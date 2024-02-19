@@ -84,7 +84,7 @@ class EditProfilePage extends StatelessWidget {
                       StreamBuilder<QuerySnapshot>(
                         stream: FirebaseFirestore.instance
                             .collection('events')
-                            .where('userEmail', isEqualTo: userEmail)
+                            .where('email', isEqualTo: userEmail)
                             .snapshots(),
                         builder: (context, eventSnapshot) {
                           if (eventSnapshot.connectionState ==
