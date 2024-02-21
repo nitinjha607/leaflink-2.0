@@ -21,11 +21,12 @@ Welcome to Leaflink, your go-to companion for making a positive impact on the en
 | Google Cloud Firestore     | Firestore database for storing user contributions and event information.                         |
 
 ## Screenshots
+## Screenshots
 
-![Screenshot 1](https://github.com/nitinjha607/leaflink-2.0/assets/118757299/2655eb47-0303-4387-b6ae-178de80be511)
-![Screenshot 2](https://github.com/nitinjha607/leaflink-2.0/assets/118757299/87c54226-4427-415d-bc46-63d9842749fe)
-![Screenshot 3](https://github.com/nitinjha607/leaflink-2.0/assets/118757299/b516b7f7-8a91-472b-af35-68a047f199c8)
-![Screenshot 4](https://github.com/nitinjha607/leaflink-2.0/assets/118757299/8ad9e3fd-c6a5-4b30-b0e1-921814df47ab)
+<img src="https://github.com/nitinjha607/leaflink-2.0/assets/118757299/2655eb47-0303-4387-b6ae-178de80be511" alt="Screenshot 1" width="200" height="400">
+<img src="https://github.com/nitinjha607/leaflink-2.0/assets/118757299/87c54226-4427-415d-bc46-63d9842749fe" alt="Screenshot 2" width="200" height="400">
+<img src="https://github.com/nitinjha607/leaflink-2.0/assets/118757299/b516b7f7-8a91-472b-af35-68a047f199c8" alt="Screenshot 3" width="200" height="400">
+<img src="https://github.com/nitinjha607/leaflink-2.0/assets/118757299/8ad9e3fd-c6a5-4b30-b0e1-921814df47ab" alt="Screenshot 4" width="200" height="400">
 
 ## Installation
 
