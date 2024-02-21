@@ -45,7 +45,7 @@ class _HomePageState extends State<HomePage> {
   DateTime now = DateTime.now();
   final int currentMonth = DateTime.now().month;
   final gemini =
-      GoogleGemini(apiKey: "AIzaSyBOF5UUEHg4Io02E5p6QkhIPtccXexa5eQ");
+      GoogleGemini(apiKey: "YOUR_API_KEY");
   final ImagePicker _picker =
       ImagePicker(); // Create an instance of ImagePicker
   File? capturedImage; // Define File variable to store the captured image
