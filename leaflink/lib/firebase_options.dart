@@ -44,42 +44,42 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyBzLPGrr3V11mHhIVFk_friu47oR5LBsSs',
-    appId: '1:821697692793:web:08bf27a9936c3287c400a8',
-    messagingSenderId: '821697692793',
-    projectId: 'leaf-link-1e912',
-    authDomain: 'leaf-link-1e912.firebaseapp.com',
-    databaseURL: 'https://leaf-link-1e912-default-rtdb.firebaseio.com',
-    storageBucket: 'leaf-link-1e912.appspot.com',
-    measurementId: 'G-Z9E1PLNTK2',
+    apiKey: 'YOUR_API_KEY',
+    appId: 'YOUR_APP_ID',
+    messagingSenderId: 'YOUR_MESSAGINGID',
+    projectId: 'YOUR_PROJECT_ID',
+    authDomain: 'YOUR_AUTH_DOMAIN',
+    databaseURL: 'YOUR_DATABSE_URL',
+    storageBucket: 'YOUR_STORAGEBUCKET_ID',
+    measurementId: 'YOUR_MEASURMENTID',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyAliaU9VPVTLLvAqBitOol-lwfqlGxeDXs',
-    appId: '1:821697692793:android:195ad8509aa13d7ac400a8',
-    messagingSenderId: '821697692793',
-    projectId: 'leaf-link-1e912',
-    databaseURL: 'https://leaf-link-1e912-default-rtdb.firebaseio.com',
-    storageBucket: 'leaf-link-1e912.appspot.com',
+    apiKey: 'YOUR_API_KEY',
+    appId: 'YOUR_APP_ID',
+    messagingSenderId: 'YOUR_MESSAGINGID',
+    projectId: 'YOUR_PROJECT_ID',
+    databaseURL: 'YOUR_DATABSE_URL',
+    storageBucket: 'YOUR_STORAGEBUCKET_ID',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyBZk-iZ1r2SzRSFzYK3a32ZSREdmTEYlTg',
-    appId: '1:821697692793:ios:c17ce8268d7a16f2c400a8',
-    messagingSenderId: '821697692793',
-    projectId: 'leaf-link-1e912',
-    databaseURL: 'https://leaf-link-1e912-default-rtdb.firebaseio.com',
-    storageBucket: 'leaf-link-1e912.appspot.com',
+    apiKey: 'YOUR_API_KEY',
+    appId: 'YOUR_APP_ID',
+    messagingSenderId: 'YOUR_MESSAGINGID',
+    projectId: 'YOUR_PROJECT_ID',
+    databaseURL: 'YOUR_DATABSE_URL',
+    storageBucket: 'YOUR_STORAGEBUCKET_ID',
     iosBundleId: 'com.example.leaflink',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyBZk-iZ1r2SzRSFzYK3a32ZSREdmTEYlTg',
-    appId: '1:821697692793:ios:8ea4457d71afaca2c400a8',
-    messagingSenderId: '821697692793',
-    projectId: 'leaf-link-1e912',
-    databaseURL: 'https://leaf-link-1e912-default-rtdb.firebaseio.com',
-    storageBucket: 'leaf-link-1e912.appspot.com',
+    apiKey: 'YOUR_API_KEY',
+    appId: 'YOUR_APP_ID',
+    messagingSenderId: 'YOUR_MESSAGINGID',
+    projectId: 'YOUR_PROJECT_ID',
+    databaseURL: 'YOUR_DATABSE_URL',
+    storageBucket: 'YOUR_STORAGEBUCKET_ID',
     iosBundleId: 'com.example.leaflink.RunnerTests',
   );
 }
