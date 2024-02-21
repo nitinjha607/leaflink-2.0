@@ -41,8 +41,15 @@ At Leaflink, our mission is simple yet profound: to inspire and empower individu
 
 ## Screenshots
 
-<img src="https://github.com/nitinjha607/leaflink-2.0/assets/118757299/76db7eaa-f28c-44af-a6d5-1c1b45521a39" alt="Screenshot 1" style="height: 200px; float: left; margin-right: 10px;">
-<img src="https://github.com/nitinjha607/leaflink-2.0/assets/118757299/bd570199-6fec-489e-bbe5-466e419aca1e" alt="Screenshot 2" style="height: 200px; float: left;">
+<img src="https://github.com/nitinjha607/leaflink-2.0/assets/118757299/76db7eaa-f28c-44af-a6d5-1c1b45521a39" alt="Screenshot 1" style="height: 200px; margin-right: 10px;">
+<img src="https://github.com/nitinjha607/leaflink-2.0/assets/118757299/bd570199-6fec-489e-bbe5-466e419aca1e" alt="Screenshot 2" style="height: 200px; margin-right: 10px;">
+<img src="https://github.com/nitinjha607/leaflink-2.0/assets/118757299/fca28027-143f-4186-a2bf-ffe4613158be" alt="Screenshot 3" style="height: 200px; margin-right: 10px;">
+<img src="https://github.com/nitinjha607/leaflink-2.0/assets/118757299/251bd3d8-3131-446e-8263-a9ef3da232c0" alt="Screenshot 4" style="height: 200px; margin-right: 10px;">
+<img src="https://github.com/nitinjha607/leaflink-2.0/assets/118757299/c7b9be0d-e9e1-42ad-bc35-6dd5478fe00a" alt="Screenshot 5" style="height: 200px; margin-right: 10px;">
+<img src="https://github.com/nitinjha607/leaflink-2.0/assets/118757299/c36f7857-6c62-4888-b407-95991b8aed40" alt="Screenshot 6" style="height: 200px; margin-right: 10px;">
+<img src="https://github.com/nitinjha607/leaflink-2.0/assets/118757299/b26c9de9-d645-49f6-ba44-8d9aeaca6c5d" alt="Screenshot 7" style="height: 200px; margin-right: 10px;">
+<img src="https://github.com/nitinjha607/leaflink-2.0/assets/118757299/564c0552-e267-4ea6-b70c-9f2fc42e7cd9" alt="Screenshot 8" style="height: 200px; margin-right: 10px;">
+<img src="https://github.com/nitinjha607/leaflink-2.0/assets/118757299/7129d00f-530c-44bb-bceb-14aff24748ae" alt="Screenshot 9" style="height: 200px;">
 
 
 ## Installation
