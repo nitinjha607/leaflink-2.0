@@ -1,4 +1,5 @@
-# Leaflink - Waste Management App
+# Leaflink - Waste Management App ![image](https://github.com/nitinjha607/leaflink-2.0/assets/118757299/8002f7f2-611b-4e45-b51b-1232f5c3f530)
+
 
 Welcome to Leaflink, your go-to companion for making a positive impact on the environment through waste reduction, reuse, and recycling. In today's world, where environmental sustainability is of paramount importance, Leaflink empowers users to take actionable steps towards building a greener and more sustainable future.
 
@@ -72,7 +73,7 @@ To install and run the Waste Management App, follow these steps:
 
 ## Demo Video
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/odD4qWD5dKA" frameborder="0" allowfullscreen></iframe>
+📺 [Watch Demo Video](https://youtu.be/odD4qWD5dKA)
 
 ## Join Us!
 
