@@ -25,6 +25,12 @@ Community Events: Facilitates the organization of events for users to collaborat
 | Firebase                   | Backend infrastructure for user authentication, data storage, and event management.             |
 | Google Cloud Firestore     | Firestore database for storing user contributions and event information.                         |
 
+![image](https://github.com/nitinjha607/leaflink-2.0/assets/118757299/2655eb47-0303-4387-b6ae-178de80be511) ![image](https://github.com/nitinjha607/leaflink-2.0/assets/118757299/87c54226-4427-415d-bc46-63d9842749fe) ![image](https://github.com/nitinjha607/leaflink-2.0/assets/118757299/b516b7f7-8a91-472b-af35-68a047f199c8) ![image](https://github.com/nitinjha607/leaflink-2.0/assets/118757299/8ad9e3fd-c6a5-4b30-b0e1-921814df47ab)
+
+
+
+
+
 Flutter: Cross-platform framework for building mobile applications.
 Google Cloud Gemini AI: AI-powered image recognition for waste identification.
 Firebase: Backend infrastructure for user authentication, data storage, and event management.
