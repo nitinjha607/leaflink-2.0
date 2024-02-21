@@ -82,3 +82,7 @@ To install and run the Waste Management App, follow these steps:
 ## Join Us!
 
 Join us on this journey towards a cleaner, greener, and more sustainable future. Download Leaflink today and be a part of the movement to preserve and protect our planet for generations to come.
+
+## Download Our APK! 📱
+
+[![Download APK](https://img.shields.io/badge/Download-APK-blue.svg)](https://drive.google.com/file/d/158MUE1bkb_hjBjteV2I5VZChNX5fLlOr/view?usp=sharing)
