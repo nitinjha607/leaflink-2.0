@@ -60,7 +60,7 @@ To install and run the Waste Management App, follow these steps:
 3. Install dependencies by running `flutter pub get`.
 4. Ensure you have Flutter and the necessary development environment set up.
 5. Connect the app to Firebase by adding your API keys in the appropriate configuration files (API keys have been removed for safety reasons).
-6. Run the app on a physical device or use a simulator.
+6. Run the app on a physical android device.
 
 **Note:** Emulator is not preferred for running the app.
 
