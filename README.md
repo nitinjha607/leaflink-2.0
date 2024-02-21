@@ -3,7 +3,8 @@
 
 Welcome to Leaflink, your go-to companion for making a positive impact on the environment through waste reduction, reuse, and recycling. Transform your daily habits into eco-friendly actions and join the movement towards a greener future!
 
-Features
+#Features
+
 Waste Identification: Utilizes Google Cloud's Gemini AI to identify various types of waste accurately.
 Waste Management Tips: Offers users practical tips and methods to manage waste effectively, promoting responsible consumption and production.
 Contribution Tracking: Allows users to track their waste management contributions over time through interactive graphs and statistics.
@@ -22,7 +23,7 @@ Install dependencies by running flutter pub get.
 Ensure you have Flutter and the necessary development environment set up.
 Connect the app to Firebase by following the Firebase setup instructions.
 Run the app on an emulator or physical device using flutter run.
-Usage
+#Usage
 Launch the app on your device.
 Sign in or create an account to access all features.
 Use the waste identification feature to identify various types of waste.
