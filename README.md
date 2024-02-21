@@ -71,8 +71,8 @@ To install and run the Waste Management App, follow these steps:
 *Together, let's make every action count for a sustainable planet!*
 
 ## Demo Video
-<iframe width="560" height="315" src="https://youtu.be/odD4qWD5dKA" frameborder="0" allowfullscreen></iframe>
 
+<iframe width="560" height="315" src="https://www.youtube.com/embed/odD4qWD5dKA" frameborder="0" allowfullscreen></iframe>
 
 ## Join Us!
 
