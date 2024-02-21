@@ -7,6 +7,7 @@ import 'package:google_gemini/google_gemini.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:flutter/gestures.dart'; // Import gesture_detector.dart
+//gemini ai have been used in this page to generate content
 
 class SolutionPage extends StatelessWidget {
   static const String routeName = 'solutionpage';
@@ -141,7 +142,7 @@ class SolutionPage extends StatelessWidget {
   Future<String> generateContent(String imageUrl) async {
     final gemini = GoogleGemini(
         apiKey:
-            "AIzaSyBOF5UUEHg4Io02E5p6QkhIPtccXexa5eQ"); // Replace "YOUR_API_KEY" with your actual API key
+            "YOUR_API_KEY"); // Replace "YOUR_API_KEY" with your actual API key
     final resizedImage = await resizeImage(imageUrl);
     final generatedContent = await gemini.generateFromTextAndImages(
       query:
