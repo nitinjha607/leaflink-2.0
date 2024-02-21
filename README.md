@@ -1,4 +1,4 @@
-# Leaflink - Waste Management App ![image](https://github.com/nitinjha607/leaflink-2.0/assets/118757299/8002f7f2-611b-4e45-b51b-1232f5c3f530)
+# Leaflink - Waste Management App <img src="https://github.com/nitinjha607/leaflink-2.0/assets/118757299/8002f7f2-611b-4e45-b51b-1232f5c3f530" alt="Leaflink Logo" width="50" height="50">
 
 
 Welcome to Leaflink, your go-to companion for making a positive impact on the environment through waste reduction, reuse, and recycling. In today's world, where environmental sustainability is of paramount importance, Leaflink empowers users to take actionable steps towards building a greener and more sustainable future.
