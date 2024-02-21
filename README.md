@@ -4,11 +4,27 @@
 Welcome to Leaflink, your go-to companion for making a positive impact on the environment through waste reduction, reuse, and recycling. Transform your daily habits into eco-friendly actions and join the movement towards a greener future!
 
 # features
+
+| Feature               | Description                                                                                          |
+|-----------------------|------------------------------------------------------------------------------------------------------|
+| Waste Identification | Utilizes Google Cloud's Gemini AI to identify various types of waste accurately.                     |
+| Waste Management Tips| Offers users practical tips and methods to manage waste effectively, promoting responsible consumption and production. |
+| Contribution Tracking| Allows users to track their waste management contributions over time through interactive graphs and statistics. |
+| Community Events      | Facilitates the organization of events for users to collaborate, share knowledge, and work towards common sustainability goals. |
+
 Waste Identification: Utilizes Google Cloud's Gemini AI to identify various types of waste accurately.
 Waste Management Tips: Offers users practical tips and methods to manage waste effectively, promoting responsible consumption and production.
 Contribution Tracking: Allows users to track their waste management contributions over time through interactive graphs and statistics.
 Community Events: Facilitates the organization of events for users to collaborate, share knowledge, and work towards common sustainability goals.
-Technologies Used
+# Technologies Used
+
+| Technology                | Description                                                                                     |
+|----------------------------|-------------------------------------------------------------------------------------------------|
+| Flutter                    | Cross-platform framework for building mobile applications.                                      |
+| Google Cloud Gemini AI     | AI-powered image recognition for waste identification.                                          |
+| Firebase                   | Backend infrastructure for user authentication, data storage, and event management.             |
+| Google Cloud Firestore     | Firestore database for storing user contributions and event information.                         |
+
 Flutter: Cross-platform framework for building mobile applications.
 Google Cloud Gemini AI: AI-powered image recognition for waste identification.
 Firebase: Backend infrastructure for user authentication, data storage, and event management.
