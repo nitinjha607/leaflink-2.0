@@ -1,5 +1,4 @@
-# Leaflink - Waste Management App <img src="https://github.com/nitinjha607/leaflink-2.0/assets/118757299/8002f7f2-611b-4e45-b51b-1232f5c3f530" alt="Leaflink Logo" width="50" height="50">
-
+# Leaflink - Waste Management App <img src="https://github.com/nitinjha607/leaflink-2.0/assets/118757299/f15a38d4-22ea-4c18-8805-23984bd66d69" alt="Leaflink Logo" width="50" height="50">
 
 Welcome to Leaflink, your go-to companion for making a positive impact on the environment through waste reduction, reuse, and recycling. In today's world, where environmental sustainability is of paramount importance, Leaflink empowers users to take actionable steps towards building a greener and more sustainable future.
 
@@ -42,11 +41,8 @@ At Leaflink, our mission is simple yet profound: to inspire and empower individu
 
 ## Screenshots
 
-<img src="![image](https://github.com/nitinjha607/leaflink-2.0/assets/118757299/c4981f0c-66c0-4aec-acac-b825377eb3f3)
-" alt="Screenshot 1" width="200" height="400">
-<img src="https://github.com/nitinjha607/leaflink-2.0/assets/118757299/87c54226-4427-415d-bc46-63d9842749fe" alt="Screenshot 2" width="200" height="400">
-<img src="https://github.com/nitinjha607/leaflink-2.0/assets/118757299/b516b7f7-8a91-472b-af35-68a047f199c8" alt="Screenshot 3" width="200" height="400">
-<img src="https://github.com/nitinjha607/leaflink-2.0/assets/118757299/8ad9e3fd-c6a5-4b30-b0e1-921814df47ab" alt="Screenshot 4" width="200" height="400">
+![image](https://github.com/nitinjha607/leaflink-2.0/assets/118757299/76db7eaa-f28c-44af-a6d5-1c1b45521a39)
+![image](https://github.com/nitinjha607/leaflink-2.0/assets/118757299/bd570199-6fec-489e-bbe5-466e419aca1e)
 
 ## Installation
 
