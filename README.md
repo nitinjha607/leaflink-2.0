@@ -41,8 +41,9 @@ At Leaflink, our mission is simple yet profound: to inspire and empower individu
 
 ## Screenshots
 
-![image](https://github.com/nitinjha607/leaflink-2.0/assets/118757299/76db7eaa-f28c-44af-a6d5-1c1b45521a39)
-![image](https://github.com/nitinjha607/leaflink-2.0/assets/118757299/bd570199-6fec-489e-bbe5-466e419aca1e)
+<img src="https://github.com/nitinjha607/leaflink-2.0/assets/118757299/76db7eaa-f28c-44af-a6d5-1c1b45521a39" alt="Screenshot 1" style="height: 200px; float: left; margin-right: 10px;">
+<img src="https://github.com/nitinjha607/leaflink-2.0/assets/118757299/bd570199-6fec-489e-bbe5-466e419aca1e" alt="Screenshot 2" style="height: 200px; float: left;">
+
 
 ## Installation
 
