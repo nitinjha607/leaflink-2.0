@@ -1,95 +1,71 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:google_fonts/google_fonts.dart';
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
-  runApp(MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter FCM Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: NotificationPage(),
-    );
-  }
-}
-
-class NotificationPage extends StatefulWidget {
+class NotificationPage extends StatelessWidget {
   static const String routeName = 'notification_page';
 
-  @override
-  _NotificationPageState createState() => _NotificationPageState();
-}
+  const NotificationPage({super.key});
 
-class _NotificationPageState extends State<NotificationPage> {
-  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
-
-  @override
-  void initState() {
-    super.initState();
-    _configureFirebaseMessaging();
-    _requestPermissions();
-  }
-
-  void _requestPermissions() async {
-    NotificationSettings settings = await _firebaseMessaging.requestPermission(
-      alert: true,
-      badge: true,
-      sound: true,
-    );
-    print('User granted permission: ${settings.authorizationStatus}');
-  }
-
-  void _configureFirebaseMessaging() {
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      print('Got a message whilst in the foreground!');
-      print('Message data: ${message.data}');
-
-      if (message.notification != null) {
-        print('Message also contained a notification: ${message.notification}');
-        _showNotificationDialog(message.notification);
-      }
-    });
-
-    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      print('A new onMessageOpenedApp event was published!');
-      print('Message data: ${message.data}');
-    });
-  }
-
-  void _showNotificationDialog(RemoteNotification? notification) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(notification!.title ?? 'Notification'),
-        content: Text(notification.body ?? 'Body'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text('OK'),
-          ),
-        ],
-      ),
-    );
+  void back(BuildContext context) {
+    Navigator.of(context).pop();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Notification Page'),
+        toolbarHeight: MediaQuery.of(context).size.height * 0.075,
+        title: Text(
+          "Notification",
+          style: TextStyle(
+            fontFamily: GoogleFonts.comfortaa().fontFamily,
+            fontSize: MediaQuery.of(context).size.height * 0.03,
+            color: const Color.fromRGBO(16, 25, 22, 1),
+          ),
+        ),
+        backgroundColor: const Color.fromRGBO(97, 166, 171, 1),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => back(context),
+          color: const Color.fromRGBO(16, 25, 22, 1),
+        ),
       ),
-      body: Center(
-        child: Text(
-          'This is the Notification Page',
-          style: TextStyle(fontSize: 20),
+      body: SafeArea(
+        child: Stack(
+          children: [
+            Container(
+              alignment: Alignment.center,
+              height: MediaQuery.of(context).size.height,
+              width: MediaQuery.of(context).size.width,
+              decoration: const BoxDecoration(
+                color: Color.fromRGBO(246, 245, 235, 1),
+              ),
+            ),
+            Container(
+              alignment: Alignment.center,
+              child: Container(
+                margin: const EdgeInsets.all(15),
+                height: MediaQuery.of(context).size.height,
+                width: MediaQuery.of(context).size.width,
+                decoration: const BoxDecoration(
+                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                  color: Color.fromRGBO(204, 221, 221, 1),
+                ),
+                child: Padding(
+                  padding: EdgeInsets.only(
+                    top: MediaQuery.of(context).size.height * 0.4,
+                  ),
+                  child: Text(
+                    'This feature will be available soon',
+                    style: TextStyle(
+                        fontSize: MediaQuery.sizeOf(context).width * 0.04,
+                        fontFamily: GoogleFonts.kohSantepheap().fontFamily),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
