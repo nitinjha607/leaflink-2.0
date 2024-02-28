@@ -40,7 +40,7 @@ void main() async {
 
   // Replace 'YOUR_STORAGE_BUCKET' with your actual storage bucket
   storageBucket: 'YOUR_STORAGE_BUCKET',
-);
+),
 
   );
   runApp(MyApp());
