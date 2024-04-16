@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:leaflink/auth/login_or_register.dart';
-import 'package:leaflink/mappage.dart';
+import 'package:leaflink/selectvenue_page.dart';
 import 'package:leaflink/pages/connect_page.dart';
 import 'package:leaflink/pages/eventscalendar_page.dart';
 import 'package:leaflink/pages/forgotpass_page.dart';
@@ -60,7 +60,7 @@ class MyApp extends StatelessWidget {
         CreatePostPage.routeName: (BuildContext context) => CreatePostPage(),
         AddedEventsPage.routeName: (BuildContext context) => AddedEventsPage(),
         SolutionPage.routeName: (BuildContext context) => SolutionPage(),
-        BlankPage.routeName: (BuildContext context) => BlankPage(),
+        SelectVenuePage.routeName: (BuildContext context) => SelectVenuePage(),
         LoaderPage.routeName: (BuildContext context) => LoaderPage(),
       },
     );

@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:leaflink/mappage.dart';
+import 'package:leaflink/selectvenue_page.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:flutter/services.dart';
 
@@ -151,7 +151,7 @@ Widget _buildEventTile(BuildContext context, DocumentSnapshot doc) {
         );
       } else {
         // For in-person events or events without a link, navigate to the detail page
-        Navigator.pushNamed(context, BlankPage.routeName);
+        Navigator.pushNamed(context, SelectVenuePage.routeName);
       }
     },
     child: Card(
