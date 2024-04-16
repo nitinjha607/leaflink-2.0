@@ -12,11 +12,14 @@ import 'package:leaflink/pages/Create_Post_Page.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
+import 'package:leaflink/pages/request_page.dart'; // Import the request page
+
 class Post {
   final String id;
   final String imageUrl;
   final String caption;
   final String username;
+  final String userIconUrl; 
   int likes;
   List<String> likedBy;
   bool reported;
@@ -26,6 +29,7 @@ class Post {
     required this.imageUrl,
     required this.caption,
     required this.username,
+    required this.userIconUrl,
     required this.likes,
     required this.likedBy,
     required this.reported,
@@ -39,6 +43,7 @@ class Post {
       imageUrl: data['imageUrl'] ?? '',
       caption: data['caption'] ?? '',
       username: username,
+      userIconUrl: data['userIconUrl'] ?? '',
       likes: data['likes'] ?? 0,
       likedBy: List<String>.from(data['likedBy'] ?? []),
       reported: data['reported'] ?? false,
@@ -93,23 +98,35 @@ class _PostCardState extends State<PostCard> {
                   CircleAvatar(
                     backgroundColor: const Color.fromRGBO(97, 166, 171, 1),
                     child: Icon(
-                      Symbols.eco,
+                      Icons.person,
                       color: const Color.fromRGBO(246, 245, 235, 1),
                     ),
                   ),
                   SizedBox(width: 8),
-                  Text(
-                    widget.post.username,
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
+                  GestureDetector(
+                    onTap: () {
+                      // Navigate to the request page with the username
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+builder: (context) => RequestPage(username: widget.post.username, userIconUrl: widget.post.userIconUrl),
+
+                        ),
+                      );
+                    },
+                    child: Text(
+                      widget.post.username,
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
                     ),
                   ),
                   Spacer(),
                   if (!widget.post.reported)
                     IconButton(
                       onPressed: _showReportDialog,
-                      icon: Icon(Symbols.error),
+                      icon: Icon(Icons.report),
                       color: const Color.fromRGBO(16, 25, 22, 1),
                     ),
                 ],
@@ -412,13 +429,8 @@ class _ConnectPageState extends State<ConnectPage> {
             ),
             child: _loading
                 ? Center(
-                    child: Padding(
-                    padding: const EdgeInsets.all(20.0),
-                    child: LoadingAnimationWidget.dotsTriangle(
-                      color: Color.fromRGBO(97, 166, 171, 1),
-                      size: 50, // Adjust loader size
-                    ),
-                  ))
+                    child: CircularProgressIndicator(),
+                  )
                 : _error
                     ? Center(
                         child: Text(
