@@ -122,28 +122,53 @@ class _SelectVenuePageState extends State<SelectVenuePage> {
 
   void _moveCameraToPosition(LatLng position) async {
     final GoogleMapController controller = await _controller.future;
-    controller.animateCamera(CameraUpdate.newCameraPosition(
-      CameraPosition(target: position, zoom: 14),
-    ));
+    controller.animateCamera(CameraUpdate.newLatLngZoom(position, 14));
+    setState(() {
+      _markers.clear();
+      _markers.add(
+        Marker(
+          markerId: MarkerId('selected_location'),
+          position: position,
+          infoWindow: InfoWindow(
+            title: 'Selected Location',
+          ),
+        ),
+      );
+    });
   }
 
-  void _showLocationSelectionDialog() async {
-    LatLng? currentLocation =
-        await _requestLocationPermissionAndGetCurrentLocation();
-    if (currentLocation != null) {
-      setState(() {
-        _markers.add(
-          Marker(
-            markerId: MarkerId('current_location'),
-            position: currentLocation,
-            infoWindow: InfoWindow(
-              title: 'Current Location',
-            ),
-          ),
-        );
-        _moveCameraToPosition(currentLocation);
-      });
-      Navigator.of(context).pop(coordinates);
+  void _showLocationSelectionDialog(BuildContext context, String location) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Location selected: $location'),
+        duration: Duration(seconds: 5),
+      ),
+    );
+  }
+
+  void getPlaceDetails(String placeId, String description) async {
+    const String PLACES_API_KEY = "AIzaSyC-ihWtRLpJ1uIOK5hsH79u_TV-AOevPo0";
+    String baseURL = 'https://maps.googleapis.com/maps/api/place/details/json';
+    String request = '$baseURL?place_id=$placeId&key=$PLACES_API_KEY';
+
+    try {
+      var response = await http.get(Uri.parse(request));
+      var data = json.decode(response.body);
+
+      if (response.statusCode == 200) {
+        double lat = data['result']['geometry']['location']['lat'];
+        double lng = data['result']['geometry']['location']['lng'];
+
+        LatLng selectedCoordinates = LatLng(lat, lng);
+        _moveCameraToPosition(selectedCoordinates);
+        print('Selected Coordinates: $selectedCoordinates');
+        _showLocationSelectionDialog(context, description);
+        // Do whatever you need with the coordinates
+      } else {
+        throw Exception('Failed to load place details');
+      }
+    } catch (e) {
+      print(e);
     }
   }
 
@@ -206,9 +231,18 @@ class _SelectVenuePageState extends State<SelectVenuePage> {
               itemCount: _placeList.length,
               itemBuilder: (context, index) {
                 return GestureDetector(
-                  onTap: () async {},
+                  onTap: () {
+                    String placeId = _placeList[index]["place_id"];
+                    String description = _placeList[index]["description"];
+                    getPlaceDetails(placeId, description);
+                  },
                   child: ListTile(
-                    title: Text(_placeList[index]["description"]),
+                    title: Text(
+                      _placeList[index]["description"],
+                      style: TextStyle(
+                        color: Colors.blue, // Change color when tapped
+                      ),
+                    ),
                   ),
                 );
               },
@@ -217,7 +251,8 @@ class _SelectVenuePageState extends State<SelectVenuePage> {
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: _showLocationSelectionDialog,
+        onPressed: () =>
+            _showLocationSelectionDialog(context, 'Current Location'),
         label: Text('Search'),
         icon: Icon(Icons.search),
         backgroundColor: const Color.fromRGBO(97, 166, 171, 1),
