@@ -132,6 +132,14 @@ class _EventManagementPageState extends State<EventManagementPage> {
                 Row(
                   children: [
                     Radio(
+                      fillColor: MaterialStateProperty.resolveWith<Color>(
+                          (Set<MaterialState> states) {
+                        if (states.contains(MaterialState.disabled)) {
+                          return Color.fromRGBO(97, 166, 171, 1);
+                        }
+                        return Color.fromRGBO(97, 166, 171, 1);
+                      }),
+                      focusColor: const Color.fromRGBO(204, 221, 221, 1),
                       value: 'Virtual',
                       groupValue: _venueSelection,
                       onChanged: (value) {
@@ -143,6 +151,14 @@ class _EventManagementPageState extends State<EventManagementPage> {
                     Text('Virtual'),
                     SizedBox(width: 20),
                     Radio(
+                      fillColor: MaterialStateProperty.resolveWith<Color>(
+                          (Set<MaterialState> states) {
+                        if (states.contains(MaterialState.disabled)) {
+                          return Color.fromRGBO(97, 166, 171, 1);
+                        }
+                        return Color.fromRGBO(97, 166, 171, 1);
+                      }),
+                      focusColor: const Color.fromRGBO(204, 221, 221, 1),
                       value: 'In-person',
                       groupValue: _venueSelection,
                       onChanged: (value) {
@@ -174,12 +190,19 @@ class _EventManagementPageState extends State<EventManagementPage> {
                     onTap: () {
                       _selectAddress();
                     },
-                    child: SizedBox(
-                      child: Row(
-                        children: [
-                          Text("Select Address"),
-                          Icon(Icons.location_on_sharp),
-                        ],
+                    child: Center(
+                      child: Container(
+                        width: MediaQuery.of(context).size.width * 0.85,
+                        padding: EdgeInsets.all(15),
+                        decoration: BoxDecoration(
+                            color: const Color.fromRGBO(204, 221, 221, 1),
+                            borderRadius: BorderRadius.circular(5)),
+                        child: Row(
+                          children: [
+                            Text("Select Address"),
+                            Icon(Icons.location_on_sharp),
+                          ],
+                        ),
                       ),
                     ),
                   ),

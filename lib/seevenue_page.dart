@@ -133,7 +133,7 @@ class _SeeVenuePageState extends State<SeeVenuePage> {
         infoWindow: InfoWindow(
           title: 'Current Location',
         ),
-        icon: BitmapDescriptor.defaultMarker,
+        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
       ));
     });
   }
