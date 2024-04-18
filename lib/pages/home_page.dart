@@ -1,7 +1,6 @@
 // ignore_for_file: library_private_types_in_public_api
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
-//import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -20,14 +19,9 @@ import 'package:leaflink/pages/settingpages/notification_page.dart';
 import 'package:leaflink/pages/graphicaldata/chart_container.dart';
 import 'package:leaflink/pages/graphicaldata/bar_chart.dart';
 import 'dart:io';
-import 'package:flutter/services.dart';
 import 'package:google_gemini/google_gemini.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-
-//import 'package:image_cropper/image_cropper.dart';
-
-//import 'package:http/http.dart' as http;
-//import 'dart:convert';
+import 'package:location/location.dart';
 
 class HomePage extends StatefulWidget {
   static const String routeName = 'home_page';
@@ -53,6 +47,91 @@ class _HomePageState extends State<HomePage> {
   List<XFile> images = [];
   String imageProcessingResponseText = '';
   bool _deleteDataClicked = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _requestLocationPermission();
+  }
+
+  void _requestLocationPermission() async {
+    Location location = Location();
+    bool _serviceEnabled;
+    PermissionStatus _permissionGranted;
+
+    _serviceEnabled = await location.serviceEnabled();
+    if (!_serviceEnabled) {
+      _serviceEnabled = await location.requestService();
+      if (!_serviceEnabled) {
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Location services are disabled')));
+        return;
+      }
+    }
+
+    _permissionGranted = await location.hasPermission();
+    if (_permissionGranted == PermissionStatus.denied) {
+      _permissionGranted = await location.requestPermission();
+      if (_permissionGranted != PermissionStatus.granted) {
+        _showPermissionDialog();
+        return;
+      }
+    }
+
+    // Location permissions granted, now you can get the location
+    _getCurrentLocation();
+  }
+
+  void _getCurrentLocation() async {
+    LocationData? locationData;
+    try {
+      locationData = await Location().getLocation();
+    } catch (e) {
+      print('Error getting location: $e');
+      // Handle error - display a message to the user or retry obtaining location
+      return;
+    }
+
+    if (locationData != null) {
+      // Now you have the location data, you can use it as needed
+      print(
+          'Current Location: ${locationData.latitude}, ${locationData.longitude}');
+    } else {
+      // Location data is null, handle this case
+      print('Failed to get current location');
+    }
+  }
+
+  void _showPermissionDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Location Permission Required'),
+        content: Text(
+            'This app needs access to your location to function properly.'),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () async {
+              Navigator.pop(context); // Close dialog
+              await Location().requestPermission();
+              // Check permission again after the user interacts with the dialog
+              _requestLocationPermission();
+            },
+            child: Text('Grant'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context); // Close dialog
+              // Handle if the user denies permission
+              ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Location permission denied')));
+            },
+            child: Text('Deny'),
+          ),
+        ],
+      ),
+    );
+  }
 
   String monthName(int monthNumber) {
     switch (monthNumber) {

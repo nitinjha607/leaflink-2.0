@@ -2,10 +2,10 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:geolocator/geolocator.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/foundation.dart';
+import 'package:location/location.dart';
 import 'package:uuid/uuid.dart';
 
 class SelectVenuePage extends StatefulWidget {
@@ -23,7 +23,7 @@ class _SelectVenuePageState extends State<SelectVenuePage> {
   String _sessionToken = '1234567890';
   List<dynamic> _placeList = [];
 
-  Completer<GoogleMapController> _controller = Completer();
+  Completer<GoogleMapController> mapController = Completer();
   static final CameraPosition _kGoogle = const CameraPosition(
     target: LatLng(20.42796133580664, 80.885749655962),
     zoom: 14.4746,
@@ -31,7 +31,7 @@ class _SelectVenuePageState extends State<SelectVenuePage> {
 
   final Set<Marker> _markers = <Marker>{};
   late TextEditingController _searchController;
-  late LatLng coordinates;
+  LatLng? coordinates;
 
   _onChanged() {
     if (_sessionToken == null) {
@@ -91,50 +91,113 @@ class _SelectVenuePageState extends State<SelectVenuePage> {
   @override
   void dispose() {
     _searchController.dispose();
+    _requestLocationPermission();
+    mapController = Completer();
     super.dispose();
   }
 
-  Future<LatLng?> _requestLocationPermissionAndGetCurrentLocation() async {
-    final LocationPermission permission = await Geolocator.requestPermission();
-    if (permission == LocationPermission.denied) {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) => AlertDialog(
-          title: Text('Location Permission Required'),
-          content: Text(
-            'This app requires access to your location. Please grant the permission in settings.',
-          ),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(null),
-              child: Text('OK'),
-            ),
-          ],
-        ),
-      );
-      return null;
+  void _requestLocationPermission() async {
+    Location location = Location();
+    bool _serviceEnabled;
+    PermissionStatus _permissionGranted;
+
+    _serviceEnabled = await location.serviceEnabled();
+    if (!_serviceEnabled) {
+      _serviceEnabled = await location.requestService();
+      if (!_serviceEnabled) {
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Location services are disabled')));
+        return;
+      }
+    }
+
+    _permissionGranted = await location.hasPermission();
+    if (_permissionGranted == PermissionStatus.denied) {
+      _permissionGranted = await location.requestPermission();
+      if (_permissionGranted != PermissionStatus.granted) {
+        _showPermissionDialog();
+        return;
+      }
+    }
+
+    // Location permissions granted, now you can get the location
+    _getCurrentLocation();
+  }
+
+  void _getCurrentLocation() async {
+    LocationData? locationData;
+    try {
+      locationData = await Location().getLocation();
+    } catch (e) {
+      print('Error getting location: $e');
+      // Handle error - display a message to the user or retry obtaining location
+      return;
+    }
+
+    if (locationData != null) {
+      LatLng selectedCoordinates =
+          LatLng(locationData.latitude!, locationData.longitude!);
+      coordinates = selectedCoordinates;
+      _moveCameraToPosition(selectedCoordinates);
+      print(
+          'Current Location: ${locationData.latitude}, ${locationData.longitude}');
     } else {
-      Position position = await Geolocator.getCurrentPosition();
-      coordinates = LatLng(position.latitude, position.longitude);
-      return coordinates;
+      // Location data is null, handle this case
+      print('Failed to get current location');
     }
   }
 
-  void _moveCameraToPosition(LatLng position) async {
-    final GoogleMapController controller = await _controller.future;
-    controller.animateCamera(CameraUpdate.newLatLngZoom(position, 14));
-    setState(() {
-      _markers.clear();
-      _markers.add(
-        Marker(
-          markerId: MarkerId('selected_location'),
-          position: position,
-          infoWindow: InfoWindow(
-            title: 'Selected Location',
+  void _showPermissionDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Location Permission Required'),
+        content: Text(
+            'This app needs access to your location to function properly.'),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () async {
+              Navigator.pop(context); // Close dialog
+              await Location().requestPermission();
+              // Check permission again after the user interacts with the dialog
+              _requestLocationPermission();
+            },
+            child: Text('Grant'),
           ),
-        ),
-      );
-    });
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context); // Close dialog
+              // Handle if the user denies permission
+              ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Location permission denied')));
+            },
+            child: Text('Deny'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _moveCameraToPosition(LatLng position) async {
+    final GoogleMapController controller = await mapController.future;
+    controller.animateCamera(CameraUpdate.newLatLngZoom(position, 14));
+
+    // Check if the widget is mounted before calling setState
+    if (mounted) {
+      setState(() {
+        _markers.clear();
+        _markers.add(
+          Marker(
+            markerId: MarkerId('selected_location'),
+            position: position,
+            infoWindow: InfoWindow(
+              title: 'Selected Location',
+            ),
+          ),
+        );
+        coordinates = position; // Update coordinates when moving the camera
+      });
+    }
   }
 
   void _showLocationSelectionDialog(BuildContext context, String location) {
@@ -144,6 +207,12 @@ class _SelectVenuePageState extends State<SelectVenuePage> {
         duration: Duration(seconds: 5),
       ),
     );
+  }
+
+  void onMapCreated(GoogleMapController controller) {
+    if (!mapController.isCompleted) {
+      mapController.complete(controller);
+    }
   }
 
   void getPlaceDetails(String placeId, String description) async {
@@ -160,10 +229,10 @@ class _SelectVenuePageState extends State<SelectVenuePage> {
         double lng = data['result']['geometry']['location']['lng'];
 
         LatLng selectedCoordinates = LatLng(lat, lng);
+        coordinates = selectedCoordinates;
         _moveCameraToPosition(selectedCoordinates);
         print('Selected Coordinates: $selectedCoordinates');
         _showLocationSelectionDialog(context, description);
-        // Do whatever you need with the coordinates
       } else {
         throw Exception('Failed to load place details');
       }
@@ -195,13 +264,10 @@ class _SelectVenuePageState extends State<SelectVenuePage> {
               mapType: MapType.normal,
               myLocationEnabled: true,
               compassEnabled: true,
-              onMapCreated: (GoogleMapController controller) {
-                _controller.complete(controller);
-              },
+              onMapCreated: onMapCreated,
             ),
           ),
           Container(
-            width: MediaQuery.of(context).size.width * 0.9,
             color: Colors.white,
             child: Padding(
               padding: const EdgeInsets.all(8.0),
@@ -228,33 +294,49 @@ class _SelectVenuePageState extends State<SelectVenuePage> {
             child: ListView.builder(
               physics: NeverScrollableScrollPhysics(),
               shrinkWrap: true,
-              itemCount: _placeList.length,
+              itemCount: _placeList.length + 1, // Add 1 for the permanent tile
               itemBuilder: (context, index) {
-                return GestureDetector(
-                  onTap: () {
-                    String placeId = _placeList[index]["place_id"];
-                    String description = _placeList[index]["description"];
-                    getPlaceDetails(placeId, description);
-                  },
-                  child: ListTile(
+                if (index == 0) {
+                  // Render the permanent tile for "Current Location"
+                  return ListTile(
                     title: Text(
-                      _placeList[index]["description"],
+                      'Current Location',
                       style: TextStyle(
-                        color: Colors.blue, // Change color when tapped
+                        color: const Color.fromRGBO(16, 25, 22, 1),
                       ),
                     ),
-                  ),
-                );
+                    onTap: () {
+                      _getCurrentLocation(); // Call function to get current location
+                    },
+                  );
+                } else {
+                  // Render the dynamic place list tiles
+                  final dynamic place = _placeList[index - 1];
+                  return GestureDetector(
+                    onTap: () {
+                      String placeId = place["place_id"];
+                      String description = place["description"];
+                      getPlaceDetails(placeId, description);
+                    },
+                    child: ListTile(
+                      title: Text(
+                        place["description"],
+                        style: TextStyle(
+                          color: Colors.blue, // Change color when tapped
+                        ),
+                      ),
+                    ),
+                  );
+                }
               },
             ),
           ),
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () =>
-            _showLocationSelectionDialog(context, 'Current Location'),
-        label: Text('Search'),
-        icon: Icon(Icons.search),
+        onPressed: () => Navigator.pop(context, coordinates),
+        label: Text('Select'),
+        icon: Icon(Icons.add),
         backgroundColor: const Color.fromRGBO(97, 166, 171, 1),
       ),
     );

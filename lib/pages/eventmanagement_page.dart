@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -168,35 +169,17 @@ class _EventManagementPageState extends State<EventManagementPage> {
                 ],
                 if (_venueSelection == 'In-person') ...[
                   SizedBox(height: 20),
-                  MyTextField(
-                    controller: addressController,
-                    hintText: 'Address',
-                    obscureText: false,
-                  ),
                   SizedBox(height: 10),
-                  ElevatedButton(
-                    onPressed: _selectAddress,
-                    child: Text(
-                      '  Select Address  ',
-                      style: TextStyle(
-                        fontFamily: GoogleFonts.kohSantepheap().fontFamily,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                    style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all<Color>(
-                        Color.fromRGBO(97, 166, 171,
-                            1), // Adjust color to match your app theme
-                      ),
-                      padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
-                        EdgeInsets.symmetric(vertical: 16),
-                      ),
-                      shape: MaterialStateProperty.all<OutlinedBorder>(
-                        RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
+                  GestureDetector(
+                    onTap: () {
+                      _selectAddress();
+                    },
+                    child: SizedBox(
+                      child: Row(
+                        children: [
+                          Text("Select Address"),
+                          Icon(Icons.location_on_sharp),
+                        ],
                       ),
                     ),
                   ),
@@ -230,22 +213,6 @@ class _EventManagementPageState extends State<EventManagementPage> {
       setState(() {
         _selectedDate = picked;
       });
-    }
-  }
-
-  void _submitForm() {
-    if (_validateForm() && _isDateAfterCurrentDate()) {
-      _addEventToDatabase();
-    } else {
-      String errorMessage = '';
-      if (!_validateForm()) {
-        errorMessage = 'Please fill all the fields.';
-      } else {
-        errorMessage = 'Please select a date after the current date.';
-      }
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(errorMessage)),
-      );
     }
   }
 
@@ -285,7 +252,9 @@ class _EventManagementPageState extends State<EventManagementPage> {
                   'platform': platformController.text,
                   'link': linkController.text
                 }
-              : addressController.text,
+              : {
+                  'address': addressController.text,
+                },
           'date': _formatDate(_selectedDate),
           'time': _formatTime(_selectedTime),
           'email': FirebaseAuth.instance.currentUser!.email,
@@ -349,12 +318,45 @@ class _EventManagementPageState extends State<EventManagementPage> {
         builder: (context) => SelectVenuePage(),
       ),
     ).then((coordinates) {
-      // Handle the coordinates returned from SelectVenuePage
       if (coordinates != null) {
         setState(() {
           addressController.text = coordinates.toString();
         });
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Coordinates cannot be null')),
+        );
       }
     });
+  }
+
+  void _submitForm() {
+    if (_venueSelection == 'Virtual' &&
+        (platformController.text.isEmpty || linkController.text.isEmpty)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Please fill in all virtual fields')),
+      );
+      return;
+    }
+
+    if (_validateForm() && _isDateAfterCurrentDate()) {
+      if (_venueSelection == 'In-person' && addressController.text.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Please select an address')),
+        );
+        return;
+      }
+      _addEventToDatabase();
+    } else {
+      String errorMessage = '';
+      if (!_validateForm()) {
+        errorMessage = 'Please fill all the fields.';
+      } else {
+        errorMessage = 'Please select a date after the current date.';
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(errorMessage)),
+      );
+    }
   }
 }
