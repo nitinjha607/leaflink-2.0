@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:leaflink/components/my_textfield.dart';
 import 'package:leaflink/components/my_button.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:leaflink/selectvenue_page.dart';
 
 class EventManagementPage extends StatefulWidget {
   static const String routeName = 'eventmanagement_page';
@@ -16,12 +18,15 @@ class EventManagementPage extends StatefulWidget {
 class _EventManagementPageState extends State<EventManagementPage> {
   final nameController = TextEditingController();
   final titleController = TextEditingController();
-  final platformController = TextEditingController(); // Added for link input
-  final linkController = TextEditingController(); // Added for link input
+  final platformController = TextEditingController();
+  final linkController = TextEditingController();
+  final locationController = TextEditingController();
+  final coordinateController = TextEditingController();
   late DateTime _selectedDate;
   late TimeOfDay _selectedTime;
   String _venueSelection = 'Virtual'; // Default selection
   final _formKey = GlobalKey<FormState>();
+  late TextEditingController addressController;
 
   String _formatDate(DateTime date) {
     return DateFormat('MM/dd/yyyy').format(date);
@@ -39,6 +44,13 @@ class _EventManagementPageState extends State<EventManagementPage> {
     super.initState();
     _selectedDate = DateTime.now();
     _selectedTime = TimeOfDay.now();
+    addressController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    addressController.dispose();
+    super.dispose();
   }
 
   @override
@@ -144,19 +156,32 @@ class _EventManagementPageState extends State<EventManagementPage> {
                 ),
                 if (_venueSelection == 'Virtual') ...[
                   SizedBox(height: 20),
-                  Column(
-                    children: [
-                      MyTextField(
-                        controller: platformController,
-                        hintText: 'Platform',
-                        obscureText: false,
+                  MyTextField(
+                    controller: platformController,
+                    hintText: 'Platform',
+                    obscureText: false,
+                  ),
+                  MyTextField(
+                    controller: linkController,
+                    hintText: 'Link',
+                    obscureText: false,
+                  ),
+                ],
+                if (_venueSelection == 'In-person') ...[
+                  SizedBox(height: 20),
+                  SizedBox(height: 10),
+                  GestureDetector(
+                    onTap: () {
+                      _selectAddress();
+                    },
+                    child: SizedBox(
+                      child: Row(
+                        children: [
+                          Text("Select Address"),
+                          Icon(Icons.location_on_sharp),
+                        ],
                       ),
-                      MyTextField(
-                        controller: linkController,
-                        hintText: 'Link',
-                        obscureText: false,
-                      ),
-                    ],
+                    ),
                   ),
                 ],
                 SizedBox(height: 20),
@@ -191,29 +216,15 @@ class _EventManagementPageState extends State<EventManagementPage> {
     }
   }
 
-  void _submitForm() {
-    if (_validateForm() && _isDateAfterCurrentDate()) {
-      _addEventToDatabase();
-    } else {
-      String errorMessage = '';
-      if (!_validateForm()) {
-        errorMessage = 'Please fill all the fields.';
-      } else {
-        errorMessage = 'Please select a date after the current date.';
-      }
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(errorMessage)),
-      );
-    }
-  }
-
   bool _validateForm() {
     if (_venueSelection == 'Virtual') {
       return titleController.text.isNotEmpty &&
           nameController.text.isNotEmpty &&
           linkController.text.isNotEmpty;
     } else {
-      return titleController.text.isNotEmpty && nameController.text.isNotEmpty;
+      return titleController.text.isNotEmpty &&
+          nameController.text.isNotEmpty &&
+          addressController.text.isNotEmpty;
     }
   }
 
@@ -241,7 +252,9 @@ class _EventManagementPageState extends State<EventManagementPage> {
                   'platform': platformController.text,
                   'link': linkController.text
                 }
-              : _venueSelection,
+              : {
+                  'address': addressController.text,
+                },
           'date': _formatDate(_selectedDate),
           'time': _formatTime(_selectedTime),
           'email': FirebaseAuth.instance.currentUser!.email,
@@ -252,8 +265,9 @@ class _EventManagementPageState extends State<EventManagementPage> {
               ),
               titleController.clear(),
               nameController.clear(),
-              platformController.clear(), // Clear platform input
-              linkController.clear(), // Clear link input
+              platformController.clear(),
+              linkController.clear(),
+              locationController.clear(),
               setState(() {
                 _selectedDate = DateTime.now();
                 _selectedTime = TimeOfDay.now();
@@ -295,5 +309,54 @@ class _EventManagementPageState extends State<EventManagementPage> {
         ),
       ),
     );
+  }
+
+  void _selectAddress() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => SelectVenuePage(),
+      ),
+    ).then((coordinates) {
+      if (coordinates != null) {
+        setState(() {
+          addressController.text = coordinates.toString();
+        });
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Coordinates cannot be null')),
+        );
+      }
+    });
+  }
+
+  void _submitForm() {
+    if (_venueSelection == 'Virtual' &&
+        (platformController.text.isEmpty || linkController.text.isEmpty)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Please fill in all virtual fields')),
+      );
+      return;
+    }
+
+    if (_validateForm() && _isDateAfterCurrentDate()) {
+      if (_venueSelection == 'In-person' && addressController.text.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Please select an address')),
+        );
+        return;
+      }
+      _addEventToDatabase();
+    } else {
+      String errorMessage = '';
+      if (!_validateForm()) {
+        errorMessage = 'Please fill all the fields.';
+      } else {
+        errorMessage = 'Please select a date after the current date.';
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(errorMessage)),
+      );
+    }
   }
 }
