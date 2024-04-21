@@ -317,7 +317,7 @@ class _FollowRequestPageState extends State<FollowRequestPage> {
                             ? buildTrailingButtons(users[index]['email']!)
                             : (title == 'Followers'
                                 ? IconButton(
-                                    icon: const Icon(Icons.close,
+                                    icon: const Icon(Icons.delete,
                                         color: Colors.red),
                                     onPressed: () => removeFromAccepted(
                                         users[index]['email']!),
@@ -341,7 +341,7 @@ class _FollowRequestPageState extends State<FollowRequestPage> {
           onPressed: () => _acceptRequest(email),
         ),
         IconButton(
-          icon: const Icon(Icons.close, color: Colors.red),
+          icon: const Icon(Icons.delete, color: Colors.red),
           onPressed: () => _rejectRequest(email),
         ),
       ],

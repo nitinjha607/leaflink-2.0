@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart';
@@ -10,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:leaflink/pages/following_page.dart';
 import 'package:leaflink/pages/followrequest_page.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
@@ -27,15 +29,57 @@ class _EditProfilePageState extends State<EditProfilePage> {
       FirebaseAuth.FirebaseAuth.instance.currentUser!.email;
   String? imageUrl;
   int requestCount = 0;
+  int followingCount = 0;
 
   @override
   void initState() {
     super.initState();
-    fetchRequests(); // Fetch requests count on widget initialization
+    fetchRequests();
+
+    getFollowingCount();
   }
 
   void back(BuildContext context) {
     Navigator.of(context).pop();
+  }
+
+  void _showSnackBar(String message) {
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  void getFollowingCount() async {
+    User? currentUser = FirebaseAuth.FirebaseAuth.instance.currentUser;
+    if (currentUser == null || currentUser.email == null) {
+      _showSnackBar("User not properly authenticated.");
+      return;
+    }
+
+    try {
+      // Query for the 'requested' array
+      var requestedSnapshot = FirebaseFirestore.instance
+          .collection('requests')
+          .where('requested', arrayContains: currentUser.email);
+
+      // Query for the 'accepted' array
+      var acceptedSnapshot = FirebaseFirestore.instance
+          .collection('requests')
+          .where('accepted', arrayContains: currentUser.email);
+
+      // Await both queries to finish
+      var results =
+          await Future.wait([requestedSnapshot.get(), acceptedSnapshot.get()]);
+
+      int requestedCount = results[0].docs.length;
+      int acceptedCount = results[1].docs.length;
+
+      setState(() {
+        followingCount = requestedCount + acceptedCount; // Sum of both counts
+      });
+    } catch (e) {
+      _showSnackBar("Failed to fetch following count: $e");
+      print('Error fetching following count: $e');
+    }
   }
 
   Future<void> fetchRequests() async {
@@ -115,7 +159,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
             children: [
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: userDetails(requestCount),
+                child: userDetails(requestCount, followingCount),
               ),
               Expanded(
                 flex: 1,
@@ -422,7 +466,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
     );
   }
 
-  Widget userDetails(int requestCount) {
+  Widget userDetails(int requestCount, int followingCount) {
     Future<void> _removeImage() async {
       try {
         final String? currentUserEmail =
@@ -608,9 +652,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   ),
                   SizedBox(
                       width: MediaQuery.of(context).size.width *
-                          0.35), // Add horizontal spacing
+                          0.05), // Adjusted for better spacing
                   Expanded(
-                    // Use Expanded to allow the text to take up remaining space
                     child: InkWell(
                       onTap: () {
                         Navigator.push(
@@ -620,6 +663,24 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       },
                       child: Text(
                         'Requests: $requestCount',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: InkWell(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    FollowingPage())); // Navigate to FollowingPage
+                      },
+                      child: Text(
+                        'Following: $followingCount',
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
