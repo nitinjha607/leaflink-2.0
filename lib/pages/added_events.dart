@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:leaflink/selectvenue_page.dart';
+import 'package:leaflink/seevenue_page.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:flutter/services.dart';
 
@@ -141,17 +141,33 @@ Widget eventsList({required bool past}) {
 }
 
 Widget _buildEventTile(BuildContext context, DocumentSnapshot doc) {
+  var venue = doc['venue']; // Store the venue object
+
   return GestureDetector(
     onTap: () {
-      if (doc['venue'] is Map) {
-        // If it's a virtual event with a link, copy the link and show a Snackbar
-        Clipboard.setData(ClipboardData(text: doc['venue']['link']));
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Link copied')),
-        );
-      } else {
-        // For in-person events or events without a link, navigate to the detail page
-        Navigator.pushNamed(context, SelectVenuePage.routeName);
+      if (venue != null && venue is Map<String, dynamic>) {
+        if (venue.containsKey('platform') && venue.containsKey('link')) {
+          var platform = venue['platform'];
+          var link = venue['link'];
+          if (platform != null && link != null) {
+            Clipboard.setData(ClipboardData(text: link));
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Link copied')),
+            );
+            return;
+          }
+        } else if (venue.containsKey('address')) {
+          String address = venue['address'];
+
+          // Navigate to SeeVenuePage and pass the address as arguments
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => SeeVenuePage(address: address),
+            ),
+          );
+          return;
+        }
       }
     },
     child: Card(
@@ -171,26 +187,49 @@ Widget _buildEventTile(BuildContext context, DocumentSnapshot doc) {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(height: 8),
-            Row(
-              children: [
-                Icon(Icons.location_on, size: 16, color: Colors.grey),
-                SizedBox(width: 8),
-                Text(
-                  doc['venue'] is String
-                      ? doc['venue']
-                      : doc['venue']['platform'], // Handle map case
-                  style: TextStyle(fontSize: 14, color: Colors.grey),
+            if (venue != null && venue is Map<String, dynamic>) ...[
+              if (venue.containsKey('platform') &&
+                  venue.containsKey('link')) ...[
+                Row(
+                  children: [
+                    Icon(Icons.location_on, size: 16, color: Colors.grey),
+                    SizedBox(width: 8),
+                    Text(
+                      venue['platform'],
+                      style: TextStyle(fontSize: 14, color: Colors.grey),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 4),
+                Row(
+                  children: [
+                    Icon(Icons.link, size: 16, color: Colors.grey),
+                    SizedBox(width: 8),
+                    Text(
+                      venue['link'],
+                      style: TextStyle(fontSize: 14, color: Colors.grey),
+                    ),
+                  ],
+                ),
+              ] else ...[
+                Row(
+                  children: [
+                    Icon(Icons.location_on, size: 16, color: Colors.grey),
+                    SizedBox(width: 8),
+                    Text(
+                      venue['address'],
+                      style: TextStyle(fontSize: 14, color: Colors.grey),
+                    ),
+                  ],
                 ),
               ],
-            ),
-            if (doc['venue'] is Map) ...[
-              SizedBox(height: 4),
+            ] else ...[
               Row(
                 children: [
-                  Icon(Icons.link, size: 16, color: Colors.grey),
+                  Icon(Icons.location_on, size: 16, color: Colors.grey),
                   SizedBox(width: 8),
                   Text(
-                    doc['venue']['link'],
+                    venue.toString(),
                     style: TextStyle(fontSize: 14, color: Colors.grey),
                   ),
                 ],
@@ -218,14 +257,18 @@ Widget _buildEventTile(BuildContext context, DocumentSnapshot doc) {
                 ),
               ],
             ),
+            SizedBox(height: 4),
+            Row(
+              children: [
+                Icon(Icons.date_range, size: 16, color: Colors.grey),
+                SizedBox(width: 8),
+                Text(
+                  doc['date'],
+                  style: TextStyle(fontSize: 14, color: Colors.grey),
+                ),
+              ],
+            ),
           ],
-        ),
-        trailing: Text(
-          doc['date'],
-          style: TextStyle(
-            fontSize: 14,
-            color: Colors.grey,
-          ),
         ),
       ),
     ),

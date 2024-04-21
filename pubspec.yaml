@@ -60,8 +60,8 @@ dependencies:
   google_places_flutter: ^2.0.8
   permission_handler: ^11.3.1
   uuid: ^4.4.0
+  flutter_polyline_points: ^2.0.0
   flutter_svg: ^2.0.10+1
-
 
 
 
@@ -72,6 +72,8 @@ dependencies:
   flutter_local_notifications: ^16.3.0
   fl_chart: ^0.66.0
   flutter_splash_screen: ^2.0.1+1
+  flutter_translate: ^3.1.0
+  flutter_localization: ^0.2.0
 
 dev_dependencies:
   flutter_test:
