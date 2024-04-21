@@ -10,7 +10,7 @@ import 'package:leaflink/pages/home_page.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:leaflink/pages/Create_Post_Page.dart';
 import 'package:leaflink/pages/settingpages/editprofile_page.dart';
-
+import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:leaflink/pages/request_page.dart'; // Import the request page
 
 class Post {
@@ -18,7 +18,6 @@ class Post {
   final String imageUrl;
   final String caption;
   final String username;
-  final String userIconUrl;
   final String email;
   // Add this line
 
@@ -31,7 +30,6 @@ class Post {
     required this.imageUrl,
     required this.caption,
     required this.username,
-    required this.userIconUrl,
     required this.likes,
     required this.likedBy,
     required this.email,
@@ -46,7 +44,6 @@ class Post {
       imageUrl: data['imageUrl'] ?? '',
       caption: data['caption'] ?? '',
       username: username,
-      userIconUrl: data['userIconUrl'] ?? '',
       likes: data['likes'] ?? 0,
       likedBy: List<String>.from(data['likedBy'] ?? []),
       reported: data['reported'] ?? false,
@@ -91,7 +88,6 @@ class _PostCardState extends State<PostCard> {
           builder: (context) => RequestPage(
             useremail: widget.post.email,
             username: widget.post.username,
-            userIconUrl: widget.post.userIconUrl,
           ),
         ),
       );
@@ -124,8 +120,8 @@ class _PostCardState extends State<PostCard> {
                   CircleAvatar(
                     backgroundColor: const Color.fromRGBO(97, 166, 171, 1),
                     child: Icon(
-                      Icons.person,
-                      color: const Color.fromRGBO(246, 245, 235, 1),
+                      Symbols.eco,
+                      color: Color.fromRGBO(246, 245, 235, 1),
                     ),
                   ),
                   SizedBox(width: 8),
@@ -417,7 +413,6 @@ class _ConnectPageState extends State<ConnectPage> {
             style: TextStyle(
               fontFamily: GoogleFonts.comfortaa().fontFamily,
               fontSize: MediaQuery.of(context).size.height * 0.04,
-              backgroundColor: const Color.fromRGBO(97, 166, 171, 1),
             )),
         actions: [
           IconButton(

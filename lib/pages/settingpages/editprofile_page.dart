@@ -46,19 +46,29 @@ class _EditProfilePageState extends State<EditProfilePage> {
   }
 
   Future<int> getNumberOfRequests() async {
-    // Directly use the userEmail variable
     if (userEmail == null) {
       print("No current user logged in or user email is not available.");
       return 0;
     }
 
-    // Query to find requests where the current user is the recipient
-    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+    print("Fetching requests for email: $userEmail");
+
+    // Fetch the document by the userEmail as its ID
+    DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance
         .collection('requests')
-        .where('recipientEmail', isEqualTo: userEmail)
+        .doc(userEmail)
         .get();
 
-    return querySnapshot.docs.length;
+    if (documentSnapshot.exists) {
+      // Access the 'requested' array and count its length
+      List<dynamic> requested =
+          documentSnapshot.get('requested') as List<dynamic>;
+      print("Number of requests fetched: ${requested.length}");
+      return requested.length;
+    } else {
+      print("No requests document found for the user.");
+      return 0; // If the document does not exist, return 0
+    }
   }
 
   @override
@@ -416,7 +426,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
     Future<void> _removeImage() async {
       try {
         final String? currentUserEmail =
-            FirebaseAuth.FirebaseAuth.instance.currentUser!.email;
+            FirebaseAuth.FirebaseAuth.instance.currentUser?.email;
 
         QuerySnapshot querySnapshot = await FirebaseFirestore.instance
             .collection('users')
@@ -458,7 +468,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
         try {
           final String? currentUserEmail =
-              FirebaseAuth.FirebaseAuth.instance.currentUser!.email;
+              FirebaseAuth.FirebaseAuth.instance.currentUser?.email;
 
           QuerySnapshot querySnapshot = await FirebaseFirestore.instance
               .collection('users')
@@ -482,199 +492,159 @@ class _EditProfilePageState extends State<EditProfilePage> {
       }
     }
 
-    return FutureBuilder(
-      future: Firebase.initializeApp(),
+    return StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance.collection("users").snapshots(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Center(
-            child: Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: LoadingAnimationWidget.dotsTriangle(
-                color: Color.fromRGBO(97, 166, 171, 1),
-                size: 50,
-              ),
-            ),
+            child: CircularProgressIndicator(),
           );
         }
         if (snapshot.hasError) {
           return Center(child: Text('Error: ${snapshot.error}'));
         }
 
-        return StreamBuilder<QuerySnapshot>(
-          stream: FirebaseFirestore.instance.collection("users").snapshots(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: LoadingAnimationWidget.dotsTriangle(
-                    color: Color.fromRGBO(97, 166, 171, 1),
-                    size: 50,
-                  ),
-                ),
-              );
-            }
-            if (snapshot.hasError) {
-              return Center(child: Text('Error: ${snapshot.error}'));
-            }
+        final String? currentUserEmail =
+            FirebaseAuth.FirebaseAuth.instance.currentUser?.email;
+        final userData = snapshot.data!.docs.firstWhere(
+          (doc) => doc['email'] == currentUserEmail,
+        );
 
-            final String? currentUserEmail =
-                FirebaseAuth.FirebaseAuth.instance.currentUser!.email;
-            final userData = snapshot.data!.docs.firstWhere(
-              (doc) => doc['email'] == currentUserEmail,
-            );
+        if (userData == null) return Center(child: Text("User not found."));
 
-            final String user = userData['username'];
-            final userImageUrl = userData['imageUrl']; // Added userImageUrl
+        final String user = userData['username'];
+        final String? userImageUrl = userData['imageUrl'];
 
-            return Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                color: Color.fromRGBO(246, 245, 235, 1),
-              ),
-              width: MediaQuery.of(context).size.width,
-              padding: const EdgeInsets.all(10),
-              margin: const EdgeInsets.all(8),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+        return Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            color: Color.fromRGBO(246, 245, 235, 1),
+          ),
+          width: MediaQuery.of(context).size.width,
+          padding: const EdgeInsets.all(10),
+          margin: const EdgeInsets.all(8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
                 children: [
                   InkWell(
-                      onTap: () {
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8.0),
-                              ),
-                              title: Text(
-                                "Edit Profile Image",
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontFamily:
-                                      GoogleFonts.comfortaa().fontFamily,
-                                  fontSize:
-                                      MediaQuery.of(context).size.height * 0.03,
-                                  color: const Color.fromRGBO(97, 166, 171, 1),
-                                ),
-                              ),
-                              actions: [
-                                ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor:
-                                        const Color.fromRGBO(57, 80, 92, 1),
-                                    foregroundColor:
-                                        const Color.fromRGBO(246, 245, 235, 1),
-                                  ),
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                    _selectImage();
-                                  },
-                                  child: Text(
-                                    "Select Image",
-                                    style: TextStyle(
-                                      fontFamily: GoogleFonts.kohSantepheap()
-                                          .fontFamily,
-                                    ),
-                                  ),
-                                ),
-                                ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor:
-                                        const Color.fromRGBO(57, 80, 92, 1),
-                                    foregroundColor:
-                                        const Color.fromRGBO(246, 245, 235, 1),
-                                  ),
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                    _removeImage();
-                                  },
-                                  child: Text(
-                                    "Remove Image",
-                                    style: TextStyle(
-                                      fontFamily: GoogleFonts.kohSantepheap()
-                                          .fontFamily,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            );
-                          },
-                        );
-                      },
-                      child: Row(
-                        children: [
-                          Container(
-                            width: 100,
-                            height: 100,
-                            margin: EdgeInsets.only(
-                                right: 8), // Add some margin for better spacing
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(color: Colors.grey),
+                    onTap: () {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8.0),
                             ),
-                            child: userImageUrl != null
-                                ? CircleAvatar(
-                                    backgroundImage: NetworkImage(userImageUrl),
-                                    radius: 50,
-                                  )
-                                : CircleAvatar(
-                                    backgroundColor:
-                                        Color.fromRGBO(97, 166, 171, 1),
-                                    child: Icon(
-                                      Symbols.eco,
-                                      color: Color.fromRGBO(246, 245, 235, 1),
-                                    ),
-                                  ),
-                          ),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                Text(
-                                  'Requests: $requestCount',
+                            title: Text(
+                              "Edit Profile Image",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontFamily: GoogleFonts.comfortaa().fontFamily,
+                                fontSize:
+                                    MediaQuery.of(context).size.height * 0.03,
+                                color: const Color.fromRGBO(97, 166, 171, 1),
+                              ),
+                            ),
+                            actions: [
+                              ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor:
+                                      const Color.fromRGBO(57, 80, 92, 1),
+                                  foregroundColor:
+                                      const Color.fromRGBO(246, 245, 235, 1),
+                                ),
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                  _selectImage();
+                                },
+                                child: Text(
+                                  "Select Image",
                                   style: TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
+                                    fontFamily:
+                                        GoogleFonts.kohSantepheap().fontFamily,
                                   ),
-                                  overflow: TextOverflow
-                                      .ellipsis, // Prevents text from overflowing
                                 ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      )),
-                  Padding(
-                    padding: EdgeInsets.only(left: 8),
-                    child: Text(
-                      '$user',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: GoogleFonts.kohSantepheap().fontFamily,
-                        backgroundColor: Color.fromRGBO(246, 245, 235, 1),
-                        color: Color.fromRGBO(16, 25, 22, 1),
-                      ),
+                              ),
+                              ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor:
+                                      const Color.fromRGBO(57, 80, 92, 1),
+                                  foregroundColor:
+                                      const Color.fromRGBO(246, 245, 235, 1),
+                                ),
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                  _removeImage();
+                                },
+                                child: Text(
+                                  "Remove Image",
+                                  style: TextStyle(
+                                    fontFamily:
+                                        GoogleFonts.kohSantepheap().fontFamily,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    },
+                    child: CircleAvatar(
+                      radius: 50,
+                      backgroundColor: Color.fromRGBO(97, 166, 171, 1),
+                      backgroundImage: userImageUrl != null
+                          ? NetworkImage(userImageUrl)
+                          : null,
+                      child: userImageUrl == null
+                          ? Icon(
+                              Symbols.eco,
+                              color: Color.fromRGBO(246, 245, 235, 1),
+                              size: 50,
+                            )
+                          : null,
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 8.0),
-                    child: Text(
-                      '$currentUserEmail',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: GoogleFonts.kohSantepheap().fontFamily,
-                        backgroundColor: Color.fromRGBO(246, 245, 235, 1),
-                        color: Color.fromRGBO(16, 25, 22, 1),
+                  SizedBox(
+                      width: MediaQuery.of(context).size.width *
+                          0.35), // Add horizontal spacing
+                  Expanded(
+                    // Use Expanded to allow the text to take up remaining space
+                    child: InkWell(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => FollowRequestPage()));
+                      },
+                      child: Text(
+                        'Requests: $requestCount',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ),
                 ],
               ),
-            );
-          },
+              SizedBox(height: 4),
+              Text(
+                user,
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Text(
+                currentUserEmail ?? 'No email',
+                style: TextStyle(
+                  fontSize: 16,
+                ),
+              ),
+            ],
+          ),
         );
       },
     );
