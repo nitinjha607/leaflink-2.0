@@ -10,8 +10,6 @@ import 'package:leaflink/pages/home_page.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:leaflink/pages/Create_Post_Page.dart';
 import 'package:leaflink/pages/settingpages/editprofile_page.dart';
-import 'package:material_symbols_icons/symbols.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 import 'package:leaflink/pages/request_page.dart'; // Import the request page
 
@@ -20,10 +18,11 @@ class MessagePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Messages'),
+        title: Text('Request Page'),
+        backgroundColor: const Color.fromRGBO(97, 166, 171, 1), // Set the background color
       ),
       body: Center(
-        child: Text('Message Page'),
+        child: Text(''),
       ),
     );
   }
@@ -34,8 +33,9 @@ class Post {
   final String imageUrl;
   final String caption;
   final String username;
-  final String userIconUrl; 
-  final String email; // Add this line
+  final String userIconUrl;
+  final String email;
+   // Add this line
 
   int likes;
   List<String> likedBy;
@@ -75,8 +75,8 @@ class PostCard extends StatefulWidget {
   final Function(Post) onLike;
   final String currentUserEmail;
 
-
-  const PostCard({required this.post, required this.onLike,required this.currentUserEmail,Key? key})
+  const PostCard(
+      {required this.post, required this.onLike, required this.currentUserEmail, Key? key})
       : super(key: key);
 
   @override
@@ -92,21 +92,22 @@ class _PostCardState extends State<PostCard> {
     'Bullying/Harassment',
     'Scam/Irrelevant',
   ];
+  
   void _handleUsernameTap() {
-  if (widget.post.email == widget.currentUserEmail) {
-    Navigator.pushNamed(context, EditProfilePage.routeName);
-  } else {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => RequestPage(
-          username: widget.post.username,
-          userIconUrl: widget.post.userIconUrl,
+    if (widget.post.email == widget.currentUserEmail) {
+      Navigator.pushNamed(context, EditProfilePage.routeName);
+    } else {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => RequestPage(
+            username: widget.post.username,
+            userIconUrl: widget.post.userIconUrl,
+          ),
         ),
-      ),
-    );
+      );
+    }
   }
-}
 
   @override
   void initState() {
@@ -140,22 +141,7 @@ class _PostCardState extends State<PostCard> {
                   ),
                   SizedBox(width: 8),
                   GestureDetector(
-                    onTap: () {
-                      if (widget.post.email == widget.currentUserEmail) {
-      Navigator.pushNamed(context, EditProfilePage.routeName);
-    } else {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => RequestPage(
-            username: widget.post.username,
-            userIconUrl: widget.post.userIconUrl,
-          ),
-        ),
-      );
-    }
-
-                    },
+                    onTap: _handleUsernameTap,
                     child: Text(
                       widget.post.username,
                       style: TextStyle(
@@ -286,7 +272,7 @@ class _PostCardState extends State<PostCard> {
                     foregroundColor: const Color.fromRGBO(246, 245, 235, 1),
                   ),
                   onPressed: () {
-                    _selectedOption != null ? _submitReport : null;
+                    _selectedOption != null ? _submitReport() : null;
 
                     Navigator.of(context).pop(); // Close the dialog
                   },
@@ -442,21 +428,19 @@ class _ConnectPageState extends State<ConnectPage> {
             style: TextStyle(
               fontFamily: GoogleFonts.comfortaa().fontFamily,
               fontSize: MediaQuery.of(context).size.height * 0.04,
-              color: const Color.fromRGBO(16, 25, 22, 1),
+              backgroundColor: const Color.fromRGBO(97, 166, 171, 1),
             )),
         actions: [
           IconButton(
-      onPressed: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => MessagePage()),
-        );
-      },
-      icon: Icon(Icons.message),
-      color: Color.fromARGB(255, 0, 0, 0),
-    ),
-
-
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => MessagePage()),
+              );
+            },
+            icon: Icon(Icons.message),
+            color: Color.fromARGB(255, 0, 0, 0),
+          ),
           IconButton(
             onPressed: () {
               // Redirect to create post page
@@ -506,7 +490,9 @@ class _ConnectPageState extends State<ConnectPage> {
                               return PostCard(
                                 post: _posts[index],
                                 onLike: _handleLike,
-                                currentUserEmail: FirebaseAuth.FirebaseAuth.instance.currentUser!.email!, // Pass the current user's email
+                                currentUserEmail:
+                                    FirebaseAuth.FirebaseAuth.instance.currentUser!
+                                        .email!, // Pass the current user's email
 
                               );
                             } else {
