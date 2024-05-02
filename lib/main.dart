@@ -24,13 +24,24 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: const FirebaseOptions(
-      apiKey: 'AIzaSyBzLPGrr3V11mHhIVFk_friu47oR5LBsSs',
-      authDomain: 'leaf-link-1e912-default-rtdb.firebaseio.com',
-      projectId: 'leaf-link-1e912',
-      appId: '821697692793:android:195ad8509aa13d7ac400a8',
-      messagingSenderId: '821697692793',
-      storageBucket: 'leaf-link-1e912.appspot.com',
-    ),
+  // Replace 'YOUR_API_KEY' with your actual API key
+  apiKey: 'YOUR_API_KEY',
+
+  // Replace 'YOUR_AUTH_DOMAIN' with your actual auth domain
+  authDomain: 'YOUR_AUTH_DOMAIN',
+
+  // Replace 'YOUR_PROJECT_ID' with your actual project ID
+  projectId: 'YOUR_PROJECT_ID',
+
+  // Replace 'YOUR_APP_ID' with your actual app ID
+  appId: 'YOUR_APP_ID',
+
+  // Replace 'YOUR_MESSAGING_SENDER_ID' with your actual messaging sender ID
+  messagingSenderId: 'YOUR_MESSAGING_SENDER_ID',
+
+  // Replace 'YOUR_STORAGE_BUCKET' with your actual storage bucket
+  storageBucket: 'YOUR_STORAGE_BUCKET',
+),
   );
   runApp(MyApp());
 }
