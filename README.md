@@ -23,7 +23,7 @@ Leaflink is an innovative mobile application that aims to revolutionize waste ma
 | Gemini AI           | Waste scanning and providing customized solutions|
 
 ## Tech Stack
-<img src="https://github.com/nitinjha607/leaflink-2.0/assets/118757299/d09b955a-139d-445e-8bd4-d47b1695214e" alt="Screenshot 2" width="300">
+<img src="https://github.com/nitinjha607/leaflink-2.0/assets/118757299/d09b955a-139d-445e-8bd4-d47b1695214e" alt="Screenshot 2" width="500">
 
 
 ## App Images
