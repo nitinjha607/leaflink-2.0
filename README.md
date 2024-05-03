@@ -1,6 +1,6 @@
 # Leaflink
 
-![Leaflink Logo](![Screenshot 2024-05-03 224821](https://github.com/nitinjha607/leaflink-2.0/assets/118757299/5827fa13-75a5-4b62-84e2-b400c97fb7e0)
+![Leaflink Logo]((https://github.com/nitinjha607/leaflink-2.0/assets/118757299/5827fa13-75a5-4b62-84e2-b400c97fb7e0)
 )
 
 
