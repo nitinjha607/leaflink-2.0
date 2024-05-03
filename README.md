@@ -26,7 +26,7 @@ Built with Flutter for cross-platform compatibility, Firebase Firestore for user
 | Gemini AI           | Waste scanning and providing customized solutions|
 
 
-<img src="https://github.com/nitinjha607/leaflink-2.0/assets/118757299/d09b955a-139d-445e-8bd4-d47b1695214e" alt="Screenshot 2" width="550">
+<img src="https://github.com/nitinjha607/leaflink-2.0/assets/118757299/d09b955a-139d-445e-8bd4-d47b1695214e" alt="Screenshot 2" width="530">
 
 
 ## App Images
