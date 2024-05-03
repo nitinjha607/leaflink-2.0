@@ -61,9 +61,13 @@ To install Leaflink from GitHub, follow these steps:
      ```bash
    cd leaflink 
 4. Get the dependencies:
+
+   ```bash
    flutter pub get
 
 6. Run the app:
+
+   ```bash
    flutter run
 
 
