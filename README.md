@@ -38,7 +38,6 @@ Built with Flutter for cross-platform compatibility, Firebase Firestore for user
 <img src="https://github.com/nitinjha607/leaflink-2.0/assets/118757299/9d953218-5264-482c-9c8a-ed057ed2825f" alt="Screenshot 6" width="100"/>
 <img src="https://github.com/nitinjha607/leaflink-2.0/assets/118757299/edd4b4d4-159b-438c-b28b-a418dac80d2f" alt="Screenshot 7" width="100"/>
 <img src="https://github.com/nitinjha607/leaflink-2.0/assets/118757299/42bed375-3b17-4925-aff0-e5926e376779" alt="Screenshot 8" width="100"/>
-<img src="https://github.com/nitinjha607/leaflink-2.0/assets/118757299/b7523ed7-8b10-4582-bf19-6bf0c022e863" alt="Screenshot 9" width="100"/>
 <img src="https://github.com/nitinjha607/leaflink-2.0/assets/118757299/7e76a693-6f86-428b-815c-116b417512e9" alt="Screenshot 10" width="100"/>
 <img src="https://github.com/nitinjha607/leaflink-2.0/assets/118757299/85b6150f-4273-4f8b-bec4-956f77f89ae5" alt="Screenshot 11" width="100"/>
 <img src="https://github.com/nitinjha607/leaflink-2.0/assets/118757299/8de3b4f9-c19d-4e18-ba88-c45cddc99cac" alt="Screenshot 12" width="100"/>
