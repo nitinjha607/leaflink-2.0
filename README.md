@@ -49,7 +49,8 @@ There are two ways to install Leaflink: through the app store or from the GitHub
 
 **App Store Installation**
 
-Download Leaflink from the [App Store](link_to_app_store).
+[![Download APK](https://img.shields.io/badge/Download%20APK-APK-red?style=for-the-badge&logo=android)](link_to_apk)
+
 
 ### GitHub Installation
 
