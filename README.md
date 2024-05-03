@@ -48,12 +48,22 @@ There are two ways to install Leaflink: through the app store or from the GitHub
 
 Download Leaflink from the [App Store](link_to_app_store).
 
-**GitHub Installation**
+### GitHub Installation
 
-Clone the GitHub repository:
+To install Leaflink from GitHub, follow these steps:
 
-```bash
-git clone https://github.com/your_username/leaflink.git
-cd leaflink
-flutter pub get
-flutter run
+1. Clone the GitHub repository:
+
+   ```bash
+   git clone https://github.com/your_username/leaflink.git
+2. Navigate to the project directory:
+
+     ```bash
+   cd leaflink 
+4. Get the dependencies:
+   flutter pub get
+
+6. Run the app:
+   flutter run
+
+
