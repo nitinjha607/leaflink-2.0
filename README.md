@@ -59,7 +59,7 @@ Built with Flutter for cross-platform compatibility, Firebase Firestore for user
 
 There are two ways to install Leaflink: through the Google Drive or from the GitHub repository.
 
-**Google Drive Installation**
+###Google Drive Installation
 
 [![Download APK](https://img.shields.io/badge/Download%20APK-APK-red?style=for-the-badge&logo=android)](link_to_apk)
 
@@ -85,6 +85,6 @@ To install Leaflink from GitHub, follow these steps:
 
    ```bash
    flutter run
-## App Info Video
+## App Demo Video
 
 [![YouTube Video](https://img.shields.io/badge/Watch%20on%20YouTube-ff0000?style=for-the-badge&logo=youtube)](https://youtu.be/oNvPgxRMQ3g?si=u6ISiNYvk2AhHWz2)
