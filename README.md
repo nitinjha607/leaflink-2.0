@@ -1,6 +1,7 @@
 # Leaflink
 
-![Leaflink Logo](![WhatsApp Image 2024-05-03 at 22 33 41_3d302ccd](https://github.com/nitinjha607/leaflink-2.0/assets/118757299/da20da8b-fd6f-4bc6-9227-8bff1ce9f11e)
+![Leaflink Logo](![WhatsApp Image 2024-05-03 at 22 33 41_3d302ccd](![HOME (2)](https://github.com/nitinjha607/leaflink-2.0/assets/118757299/2892ed9c-b42d-43f7-8b53-4de4d9b07e40)
+)
 ){:width="100"}
 
 
