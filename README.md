@@ -61,8 +61,7 @@ There are two ways to install Leaflink: through the Google Drive or from the Git
 
 ### Google Drive Installation
 
-[![Download APK](https://drive.google.com/file/d/10KuzoO9_ies4rG4dX8p8Q6hfzP4aPI3O/view?usp=drive_link)](link_to_apk)
-
+[![Download APK](https://img.shields.io/badge/Download%20APK-APK-red?style=for-the-badge&logo=android)](https://drive.google.com/uc?export=download&id=YOUR_FILE_ID)
 
 ### GitHub Installation
 
