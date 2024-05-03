@@ -26,12 +26,12 @@ Built with Flutter for cross-platform compatibility, Firebase Firestore for user
 | Gemini AI           | Waste scanning and providing customized solutions|
 
 
-<img src="https://github.com/nitinjha607/leaflink-2.0/assets/118757299/d09b955a-139d-445e-8bd4-d47b1695214e" alt="Screenshot 2" width="600">
+<img src="https://github.com/nitinjha607/leaflink-2.0/assets/118757299/d09b955a-139d-445e-8bd4-d47b1695214e" alt="Screenshot 2" width="550">
 
 
 ## App Images
 
-<img src="![WhatsApp Image 2024-05-03 at 23 20 21_3e357756](https://github.com/nitinjha607/leaflink-2.0/assets/118757299/2ef7e58d-2ab3-4082-8931-ee20e77ac1e3)" alt="Screenshot 2" width="100"/>
+<img src="https://github.com/nitinjha607/leaflink-2.0/assets/118757299/2ef7e58d-2ab3-4082-8931-ee20e77ac1e3" alt="Screenshot 1" width="100"/>
 <img src="https://github.com/nitinjha607/leaflink-2.0/assets/118757299/d26da91b-3f51-4e9c-99bc-62cf19a9eab8" alt="Screenshot 2" width="100"/>
 <img src="https://github.com/nitinjha607/leaflink-2.0/assets/118757299/d26da91b-3f51-4e9c-99bc-62cf19a9eab8" alt="Screenshot 2" width="100"/>
 <img src="https://github.com/nitinjha607/leaflink-2.0/assets/118757299/35181374-fd59-4ed5-94d9-ab7163a96088" alt="Screenshot 3" width="100"/>
