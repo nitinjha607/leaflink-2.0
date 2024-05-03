@@ -25,7 +25,7 @@ Built with Flutter for cross-platform compatibility, Firebase Firestore for user
 | Google Maps API     | Location-based services and event mapping       |
 | Gemini AI           | Waste scanning and providing customized solutions|
 
-## Tech Stack
+
 <img src="https://github.com/nitinjha607/leaflink-2.0/assets/118757299/d09b955a-139d-445e-8bd4-d47b1695214e" alt="Screenshot 2" width="500">
 
 
@@ -58,7 +58,7 @@ To install Leaflink from GitHub, follow these steps:
 1. Clone the GitHub repository:
 
    ```bash
-   git clone https://github.com/your_username/leaflink.git
+   git clone https://github.com/nitinjha607/leaflink.git
 2. Navigate to the project directory:
 
      ```bash
@@ -75,5 +75,12 @@ To install Leaflink from GitHub, follow these steps:
 ## App Info Video
 
 [![YouTube Video](https://img.shields.io/badge/Watch%20on%20YouTube-ff0000?style=for-the-badge&logo=youtube)](https://youtu.be/oNvPgxRMQ3g?si=u6ISiNYvk2AhHWz2)
+
+### Notes
+
+- Note 1: Suitable for Android OS.
+- Note 2: Leaflink is designed for Android devices running Android 6.0 (Marshmallow) and above.
+- Note 3: API keys are missing.
+
 
 
