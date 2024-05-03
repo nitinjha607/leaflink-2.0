@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>API_KEY</key>
+	<string>AIzaSyBZk-iZ1r2SzRSFzYK3a32ZSREdmTEYlTg</string>
+	<key>GCM_SENDER_ID</key>
+	<string>821697692793</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.example.leaflink.RunnerTests</string>
+	<key>PROJECT_ID</key>
+	<string>leaf-link-1e912</string>
+	<key>STORAGE_BUCKET</key>
+	<string>leaf-link-1e912.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:821697692793:ios:8ea4457d71afaca2c400a8</string>
+</dict>
+</plist>

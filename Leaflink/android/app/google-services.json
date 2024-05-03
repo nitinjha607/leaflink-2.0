@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "821697692793",
+    "firebase_url": "https://leaf-link-1e912-default-rtdb.firebaseio.com",
+    "project_id": "leaf-link-1e912",
+    "storage_bucket": "leaf-link-1e912.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:821697692793:android:195ad8509aa13d7ac400a8",
+        "android_client_info": {
+          "package_name": "com.example.leaflink"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "821697692793-3b6k22rch30j0u4g1n7crj6t3jvou00o.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAliaU9VPVTLLvAqBitOol-lwfqlGxeDXs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "821697692793-3b6k22rch30j0u4g1n7crj6t3jvou00o.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
