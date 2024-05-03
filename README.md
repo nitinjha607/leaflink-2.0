@@ -23,7 +23,7 @@ Leaflink is an innovative mobile application that aims to revolutionize waste ma
 
 ## Watch the Demo
 
-[![Watch the Demo](link_to_youtube_thumbnail)](link_to_youtube_video)
+[![Watch the Demo](link_to_youtube_thumbnail)](https://youtu.be/odD4qWD5dKA?si=TdUtBzMgSr5KJ_q4)
 
 ## Screenshots
 
