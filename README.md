@@ -23,7 +23,6 @@ Leaflink is an innovative mobile application that aims to revolutionize waste ma
 
 ## App Images
 
-<img src="https://github.com/nitinjha607/leaflink-2.0/assets/118757299/7ddb235e-1a01-4b6f-b1ea-bfc0a6f359a4" alt="Screenshot 1" width="200"/>
 <img src="https://github.com/nitinjha607/leaflink-2.0/assets/118757299/d26da91b-3f51-4e9c-99bc-62cf19a9eab8" alt="Screenshot 2" width="100"/>
 <img src="https://github.com/nitinjha607/leaflink-2.0/assets/118757299/35181374-fd59-4ed5-94d9-ab7163a96088" alt="Screenshot 3" width="100"/>
 <img src="https://github.com/nitinjha607/leaflink-2.0/assets/118757299/7722d568-607d-479e-b593-ba29b65f7791" alt="Screenshot 4" width="100"/>
