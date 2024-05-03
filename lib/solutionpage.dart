@@ -155,7 +155,7 @@ class _SolutionPageState extends State<SolutionPage> {
 
   Future<String> generateContent(String imageUrl, LatLng? coordinates) async {
     final gemini =
-        GoogleGemini(apiKey: "YOUR_API_KEY");
+        GoogleGemini(apiKey: "AIzaSyBOF5UUEHg4Io02E5p6QkhIPtccXexa5eQ");
     final resizedImage = await resizeImage(imageUrl);
     final generatedContent = await gemini.generateFromTextAndImages(
       query:
