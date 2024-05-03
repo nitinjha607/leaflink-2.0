@@ -88,12 +88,3 @@ To install Leaflink from GitHub, follow these steps:
 ## App Info Video
 
 [![YouTube Video](https://img.shields.io/badge/Watch%20on%20YouTube-ff0000?style=for-the-badge&logo=youtube)](https://youtu.be/oNvPgxRMQ3g?si=u6ISiNYvk2AhHWz2)
-
-### Points to be remembered
-
-- Note 1: Suitable for Android OS.
-- Note 2: Leaflink is designed for Android devices running Android 6.0 (Marshmallow) and above.
-- Note 3: API keys are removed due to security reasons.
-
-
-
