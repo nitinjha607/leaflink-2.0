@@ -57,6 +57,7 @@ Built with Flutter for cross-platform compatibility, Firebase Firestore for user
 - Suitable for Android OS.
 - Leaflink is designed for Android devices running Android 6.0 (Marshmallow) and above.
 - API keys are removed due to security reasons.
+- Google cloud Credits have been exhausted as of 10 May 2024 so the Application may not generate solutions
 
 #### There are two ways to install Leaflink: through the Google Drive or from the GitHub repository.
 
